@@ -1,0 +1,80 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:fab="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:elevation="2dp">
+
+    <com.github.clans.fab.FloatingActionMenu
+        android:id="@+id/mainFab"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginBottom="50dp"
+        android:paddingBottom="40dp"
+        android:paddingLeft="@dimen/fab_margin"
+        android:paddingRight="11dp"
+        android:textColor="@android:color/white"
+        fab:fab_colorNormal="@color/colorWhite"
+        fab:menu_colorNormal="@color/colorWhite"
+        android:alpha="0.8"
+        fab:menu_colorPressed="#62B2FF"
+        fab:menu_colorRipple="#62B2FF"
+        fab:menu_fab_label="TravelMap"
+        fab:menu_icon="@drawable/ic_map_black_24dp"
+        fab:menu_labels_ellipsize="end"
+        fab:menu_labels_singleLine="true"
+        fab:menu_labels_textColor="@color/colorWhite"
+        tools:ignore="RtlHardcoded"
+        >
+        <!--fab:menu_backgroundColor="#997D7D7D"-->
+        <!--fab:menu_labels_colorNormal="@color/transparent"-->
+
+
+        <com.github.clans.fab.FloatingActionButton
+            android:id="@+id/fabClearMap"
+            style="@style/CityZenMenu"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_clear_scaled"
+            fab:fab_label="Xóa bản đồ"
+            fab:fab_size="mini" />
+
+        <com.github.clans.fab.FloatingActionButton
+            android:id="@+id/fabLocation"
+            style="@style/CityZenMenu"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_gps"
+
+            fab:fab_label="Địa điểm của tôi"
+            fab:fab_size="mini" />
+
+        <com.github.clans.fab.FloatingActionButton
+            android:id="@+id/fab_zoom_in"
+            style="@style/CityZenMenu"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_plus_scaled"
+            fab:fab_label="Phóng to"
+            fab:fab_size="mini"
+            />
+
+
+        <com.github.clans.fab.FloatingActionButton
+            android:id="@+id/fab_zoom_out"
+            style="@style/CityZenMenu"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_minus_scaled"
+
+            android:tint="@color/fab_orange_bright"
+
+            fab:fab_label="Thu nhỏ"
+            fab:fab_size="mini" />
+
+    </com.github.clans.fab.FloatingActionMenu>
+
+
+</RelativeLayout>

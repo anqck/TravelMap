@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.n.travelmap.MainActivity"
+    android:orientation="vertical">
+
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/appbarlayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/AppTheme.AppBarOverlay"
+        app:layout_behavior="@string/ScrollingAppBarLayoutBehavior"
+        >
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            app:popupTheme="@style/AppTheme.PopupOverlay"
+            android:layout_marginTop="24dp"
+            android:fitsSystemWindows="false">
+
+            <com.github.jorgecastilloprz.FABProgressCircle
+                android:id="@+id/fabProgressCircle"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                app:circleSize="mini"
+                app:reusable="true"
+                android:layout_marginRight="10dp"
+                >
+            <android.support.design.widget.FloatingActionButton
+                android:id="@+id/btn_mode_car"
+                android:layout_width="@dimen/fab_size_mini"
+                android:layout_height="@dimen/fab_size_mini"
+                android:scaleType="center"
+                android:src="@drawable/ic_car"
+                android:clickable="true"
+                app:backgroundTint="@color/colorPrimaryDark"
+                android:tint="@color/colorWhite"
+                android:background="?selectableItemBackgroundBorderless"
+                app:rippleColor="@color/colorAppGreen"
+                />
+            </com.github.jorgecastilloprz.FABProgressCircle>
+
+            <com.github.jorgecastilloprz.FABProgressCircle
+                android:id="@+id/fabProgressCircleWalk"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                app:circleSize="mini"
+                app:reusable="true"
+                android:layout_marginRight="10dp"
+                >
+            <android.support.design.widget.FloatingActionButton
+                android:id="@+id/btn_mode_walk"
+                android:layout_width="@dimen/fab_size_mini"
+                android:layout_height="@dimen/fab_size_mini"
+                android:src="@drawable/ic_walking"
+
+                android:scaleType="center"
+                android:clickable="true"
+                android:tint="@color/colorWhite"
+
+                app:backgroundTint="@color/colorPrimaryDark"
+                android:background="?selectableItemBackgroundBorderless"
+                app:rippleColor="@color/colorAppGreen"
+                />
+            </com.github.jorgecastilloprz.FABProgressCircle>
+
+
+            <com.github.jorgecastilloprz.FABProgressCircle
+                android:id="@+id/fabProgressCircleBiking"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                app:circleSize="mini"
+                app:reusable="true"
+                android:layout_marginRight="10dp"
+                >
+            <android.support.design.widget.FloatingActionButton
+                android:id="@+id/btn_mode_biking"
+                android:layout_width="@dimen/fab_size_mini"
+                android:layout_height="@dimen/fab_size_mini"
+                android:src="@drawable/ic_bicycle"
+                android:scaleType="center"
+                android:clickable="true"
+                android:tint="@color/colorWhite"
+                app:backgroundTint="@color/colorPrimaryDark"
+                android:background="?selectableItemBackgroundBorderless"
+                app:rippleColor="@color/colorAppGreen"
+                />
+            </com.github.jorgecastilloprz.FABProgressCircle>
+        </android.support.v7.widget.Toolbar>
+
+
+
+            />
+    </android.support.design.widget.AppBarLayout>
+
+    <include layout="@layout/fab_layout" />
+
+    <fragment
+    android:id="@+id/map_fragment"
+    android:name="com.n.travelmap.MapsFragment"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+        android:layout_marginTop="20dp"
+        android:fitsSystemWindows="false"
+    />
+
+    <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/coordinatorlayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="60dp"
+        android:fitsSystemWindows="true"
+        tools:context=".MapsActivity">
+
+
+
+
+        <android.support.v4.view.ViewPager
+            android:id="@+id/pager"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/anchor_point"
+
+            android:background="@android:color/transparent"
+            android:fitsSystemWindows="true"
+            app:layout_behavior="@string/BackDropBottomSheetBehavior"></android.support.v4.view.ViewPager>
+
+        <android.support.v4.widget.NestedScrollView
+            android:id="@+id/bottom_sheet"
+            android:layout_width="match_parent"
+
+            android:layout_height="match_parent"
+            android:fitsSystemWindows="true"
+
+            android:orientation="vertical"
+            app:anchorPoint="@dimen/anchor_point"
+            app:behavior_hideable="true"
+            app:behavior_peekHeight="@dimen/bottom_sheet_peek_height"
+            app:layout_behavior="@string/BottomSheetBehaviorGoogleMapsLike">
+
+            <include
+                layout="@layout/bottom_sheet_content"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:fitsSystemWindows="true" />
+        </android.support.v4.widget.NestedScrollView>
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fabDirection"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/fab_margin"
+            android:clickable="true"
+            android:src="@drawable/ic_action_go"
+            app:layout_anchor="@id/bottom_sheet"
+            app:layout_anchorGravity="top|right|end"
+            app:layout_behavior="@string/ScrollAwareFABBehavior" />
+
+        <android.support.design.widget.AppBarLayout
+            android:id="@+id/merged_appbarlayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:tag="modal-appbar"
+            android:theme="@style/AppTheme.AppBarOverlay"
+            app:layout_behavior="@string/MergedAppBarLayoutBehavior">
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <View
+                    android:id="@+id/background"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_gravity="bottom"
+                    android:background="@color/colorPrimary" />
+
+                <android.support.v7.widget.Toolbar
+                    android:id="@+id/expanded_toolbar"
+                    android:layout_width="match_parent"
+                    android:layout_height="?attr/actionBarSize"
+                    app:navigationIcon="@drawable/ic_close_white_24dp"
+                    app:popupTheme="@style/AppTheme.PopupOverlay"
+                    app:title="@string/key_binding_default_toolbar_name" />
+            </FrameLayout>
+        </android.support.design.widget.AppBarLayout>
+    </android.support.design.widget.CoordinatorLayout>
+
+
+    <!--<LinearLayout-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="45dp"-->
+        <!--android:id="@+id/bottom_menu"-->
+        <!--android:orientation="vertical"-->
+        <!--android:layout_alignParentBottom="true"/>-->
+
+    <!--<LinearLayout-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="60dp"-->
+        <!--android:id="@+id/bottom_menu_selectplace"-->
+        <!--android:orientation="vertical"-->
+        <!--android:layout_alignParentBottom="true"/>-->
+
+    <!--</LinearLayout>-->
+    <!--<fragment-->
+        <!--android:nacom.n.travelmap.SearchMenuFragmentment"-->
+        <!--android:id="@+id/bottom_menu"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="50dp"-->
+        <!--android:layout_alignParentBottom="true"/>-->
+
+    <!--<com.roughike.bottombar.BottomBar-->
+        <!--android:id="@+id/bottomBar"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="50dp"-->
+        <!--android:layout_alignParentBottom="true"-->
+        <!--app:bb_tabXmlResource="@xml/bottombar_tabs" />-->
+
+    <!--<android.support.design.widget.BottomNavigationView-->
+        <!--android:id="@+id/navigation"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="50dp"-->
+        <!--android:layout_alignParentBottom="true"-->
+        <!--android:background="?android:attr/windowBackground"-->
+        <!--app:menu="@menu/navigation" />-->
+
+    <fragment
+        android:name="com.n.travelmap.DirectionMenuFragment"
+        android:id="@+id/direction_place_menu"
+        android:layout_width="match_parent"
+        android:layout_height="95dp"
+        android:layout_alignParentBottom="true"
+
+        />
+
+    <fragment
+        android:name="com.n.travelmap.SelectPlaceMenuFragment"
+        android:id="@+id/select_place_menu"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_alignParentBottom="true"
+
+        />
+
+
+
+</RelativeLayout>

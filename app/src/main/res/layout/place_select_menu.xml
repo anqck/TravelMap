@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:elevation="2dp">
+    android:background="@android:color/background_light"
+
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/menu_normal"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@android:color/background_light"
+        android:orientation="horizontal">
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="LƯU"
+            android:drawableTop="@drawable/ic_add"
+            android:layout_weight="0.25"/>
+
+        <Button
+            android:id="@+id/btn_move_from"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="BẮT ĐẦU"
+            android:drawableTop="@drawable/ic_move_from"
+            android:layout_weight="0.25"/>
+
+        <Button
+            android:id="@+id/btn_move_to"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="KẾT THUC"
+            android:drawableTop="@drawable/ic_move_to"
+            android:layout_weight="0.25"/>
+
+    </LinearLayout>
+    <!--android:background="?android:selectableItemBackgroundBorderless"-->
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/menu_remove"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@android:color/background_light"
+        android:orientation="horizontal">
+        <Button
+            android:id="@+id/btn_remove"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="XÓA"
+            android:drawableTop="@drawable/ic_trash_can"
+            />
+
+    </LinearLayout>
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/menu_extends"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@android:color/background_light"
+        android:orientation="horizontal">
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="LƯU"
+            android:drawableTop="@drawable/ic_add"
+            android:layout_weight="0.25"/>
+
+        <Button
+            android:id="@+id/btn_move_from_1"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="BẮT ĐẦU"
+            android:drawableTop="@drawable/ic_move_from"
+            android:layout_weight="0.25"/>
+
+        <Button
+            android:id="@+id/btn_move_to_1"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="KẾT THUC"
+            android:drawableTop="@drawable/ic_move_to"
+            android:layout_weight="0.25"/>
+
+        <Button
+            android:id="@+id/btn_extend"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="THÊM"
+            android:drawableTop="@drawable/ic_3dot"
+            android:layout_weight="0.25"/>
+
+    </LinearLayout>
+
+</RelativeLayout>
+
+
+

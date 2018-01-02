@@ -1,0 +1,154 @@
+<!--<?xml version="1.0" encoding="utf-8"?>-->
+<!--<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"-->
+    <!--xmlns:tools="http://schemas.android.com/tools"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="match_parent">-->
+
+
+    <!--<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"-->
+        <!--xmlns:tools="http://schemas.android.com/tools"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:background="@android:color/transparent"-->
+        <!--android:backgroundTint="@color/colorPrimaryDark"-->
+        <!--android:orientation="horizontal"-->
+        <!--android:id="@+id/result_mode"-->
+        <!--android:visibility="invisible">-->
+
+        <!--<TextView-->
+            <!--android:id="@+id/textView"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="match_parent"-->
+            <!--android:layout_weight="1"-->
+            <!--android:text="Phút" />-->
+    <!--</LinearLayout>-->
+
+    <!--&lt;!&ndash;<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"&ndash;&gt;-->
+        <!--&lt;!&ndash;xmlns:tools="http://schemas.android.com/tools"&ndash;&gt;-->
+        <!--&lt;!&ndash;android:layout_width="match_parent"&ndash;&gt;-->
+        <!--&lt;!&ndash;android:layout_height="match_parent"&ndash;&gt;-->
+        <!--&lt;!&ndash;android:background="@android:color/transparent"&ndash;&gt;-->
+        <!--&lt;!&ndash;android:backgroundTint="@color/colorPrimaryDark"&ndash;&gt;-->
+        <!--&lt;!&ndash;android:orientation="horizontal"&ndash;&gt;-->
+        <!--&lt;!&ndash;android:id="@+id/bottom_menu_searchmode"&ndash;&gt;-->
+        <!--&lt;!&ndash;android:visibility="invisible">&ndash;&gt;-->
+
+        <!--&lt;!&ndash;<Button&ndash;&gt;-->
+            <!--&lt;!&ndash;android:layout_width="match_parent"&ndash;&gt;-->
+            <!--&lt;!&ndash;android:layout_height="match_parent"&ndash;&gt;-->
+            <!--&lt;!&ndash;android:background="?android:selectableItemBackgroundBorderless"&ndash;&gt;-->
+            <!--&lt;!&ndash;android:text="Thêm vào địa điểm"&ndash;&gt;-->
+            <!--&lt;!&ndash;android:drawableLeft="@drawable/ic_three_line"&ndash;&gt;-->
+            <!--&lt;!&ndash;android:layout_weight="1"/>&ndash;&gt;-->
+    <!--&lt;!&ndash;</LinearLayout>&ndash;&gt;-->
+
+<!--</RelativeLayout>-->
+
+
+
+
+
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:elevation="0dp"
+
+    >
+
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/view_need_pos"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="46dp"
+        android:layout_marginHorizontal="15dp"
+        android:background="@android:color/transparent"
+        android:orientation="horizontal">
+
+
+        <Button
+            android:id="@+id/btn_add_place"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:backgroundTint="@color/colorWhite"
+            android:drawableLeft="@drawable/search_scaled"
+
+            android:drawableTint="@color/blue"
+            android:textColor="@color/blue"
+            android:text="Bổ sung địa điểm kết thúc để lập kế hoạch lộ trình"
+            android:textSize="11sp" />
+
+    </LinearLayout>
+
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/menu_normal"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@android:color/background_light"
+        android:orientation="horizontal"
+        android:layout_marginHorizontal="15dp"
+        android:layout_marginVertical="10dp"
+        >
+        <ImageView
+
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_direction"
+            android:layout_marginTop = "2dp"
+            android:tint="@color/blue"
+            android:paddingLeft="80dp"/>
+        <TextView
+            android:id="@+id/text_distance"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:textSize="16dp"
+            android:text="120 km"
+            android:textStyle="bold"
+            android:paddingTop="6dp"
+            android:paddingLeft="2dp"
+            android:textColor="@color/blue"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:paddingTop="7dp"
+            android:textSize="14dp"
+            android:textColor="@color/blue"
+            android:text=" . "
+            />
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_time"
+            android:layout_marginTop = "2dp"
+            android:tint="@color/blue"
+            android:paddingLeft="0dp"
+            android:scaleX="0.8"
+            android:scaleY="0.8"
+            android:paddingTop="3dp"/>
+        <TextView
+            android:id="@+id/text_time"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingTop="7dp"
+            android:textSize="14dp"
+            android:textColor="@color/blue"
+            android:text="60 giây"
+            android:paddingLeft="4dp"
+            />
+
+    </LinearLayout>
+    <!--android:background="?android:selectableItemBackgroundBorderless"-->
+
+
+
+</RelativeLayout>
+
+
+

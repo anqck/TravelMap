@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout  xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.n.travelmap.Activity.SearchActivity.SearchActivity"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
+    android:descendantFocusability="beforeDescendants"
+    >
+
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/my_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/colorPrimary"
+            android:elevation="4dp"
+            >
+
+            <!--<com.n.myapplication.MyAutoCompleteTextView-->
+            <!--android:id="@+id/autocomplete"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_marginLeft="0dp"-->
+            <!--android:layout_marginRight="25dp"-->
+
+            <!--android:background="@drawable/text_view_border"-->
+            <!--android:drawableLeft="@drawable/ic_search"-->
+            <!--android:drawablePadding="14dp"-->
+            <!--android:hint="Nhập vào địa điểm"-->
+            <!--android:padding="7.5dp" />-->
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+                <LinearLayout
+                    android:id="@+id/search_toolbar"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+
+                    android:layout_marginRight="15dp">
+                    <EditText
+                        android:id="@+id/search_text"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:background="@drawable/text_view_border"
+                        android:drawableLeft="@drawable/ic_search"
+                        android:drawableTint="@color/colorPrimaryDark"
+                        android:drawablePadding="7dp"
+                        android:padding="7.5dp"
+                        android:textColor="@android:color/black"
+                        android:layout_weight="0.9"
+
+                        />
+
+                    <!--<Button-->
+                    <!--android:id="@+id/btn_filter"-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:layout_gravity="center_vertical"-->
+                    <!--android:layout_weight="0.9"-->
+                    <!--style="@style/Base.Widget.AppCompat.Button.Borderless.Colored"-->
+                    <!--android:drawableStart="@drawable/ic_3dot_vertical"-->
+                    <!--android:drawableTint="@color/colorPrimaryDark"/>-->
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:id="@+id/show_on_map_layout"
+                    >
+                    <Button
+                        android:layout_marginVertical="5dp"
+                        android:backgroundTint="@color/place_autocomplete_search_hint"
+
+                        android:textColor="@color/bb_darkBackgroundColor"
+                        android:id="@+id/btn_show_on_map"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+
+                        android:text="Hiển thị trên bản đồ"
+                        android:gravity="center_vertical"/>
+                </LinearLayout>
+            </RelativeLayout>
+
+
+
+        </android.support.v7.widget.Toolbar>
+    </android.support.design.widget.AppBarLayout>
+
+    <LinearLayout
+        android:id="@+id/contain"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:backgroundTint="@android:color/transparent"
+        android:orientation="vertical">
+
+    </LinearLayout>
+
+    <!--<fragment-->
+        <!--android:id="@+id/my_fragment"-->
+        <!--android:name="com.n.myapplication.SearchMainMenuFragment"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent" />-->
+
+
+</LinearLayout>

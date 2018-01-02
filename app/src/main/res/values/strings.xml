@@ -1,0 +1,23 @@
+<resources>
+    <string name="app_name">TravelMap</string>
+
+    <string name="google_maps_key" templateMergeStrategy="preserve" translatable="false">AIzaSyAVcfnvHHZVsqletjt8CP0szAqH4iGCxWE</string>
+
+    <string name="key_binding_default_toolbar_name">Modal-Toolbar-Title</string>
+
+    <string name="dummy_text">Chưa có thông tin về địa điểm này"</string>
+
+
+    <string name="BackDropBottomSheetBehavior">com.n.travelmap.Library.BottomSheetInfomation.BackdropBottomSheetBehavior</string>
+    <string name="BottomSheetBehaviorGoogleMapsLike">com.n.travelmap.Library.BottomSheetInfomation.BottomSheetBehaviorGoogleMapsLike</string>
+    <string name="ScrollAwareFABBehavior">com.n.travelmap.Library.BottomSheetInfomation.ScrollAwareFABBehavior</string>
+    <string name="MergedAppBarLayoutBehavior">com.n.travelmap.Library.BottomSheetInfomation.MergedAppBarLayoutBehavior</string>
+    <string name="ScrollingAppBarLayoutBehavior">com.n.travelmap.Library.BottomSheetInfomation.ScrollingAppBarLayoutBehavior</string>
+
+    <string name="NoInformation">Không có thông tin</string>
+    <string name="title_activity_base">BaseActivity</string>
+    <string name="title_home">Home</string>
+    <string name="title_dashboard">Dashboard</string>
+    <string name="title_notifications">Notifications</string>
+    <string name="title_activity_temp">TempActivity</string>
+</resources>
