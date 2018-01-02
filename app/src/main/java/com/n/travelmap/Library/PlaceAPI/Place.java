@@ -2,7 +2,9 @@ package com.n.travelmap.Library.PlaceAPI;
 
 import android.location.Location;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * Created by nor on 8/25/2016.
@@ -175,6 +177,85 @@ public class Place {
 
     public double getLongitude(){
         return location.getLongitude();
+    }
+
+    public List<String> GetTypesTrans()
+    {
+        List<String> types = new ArrayList<>();
+        for(int i = 0; i < getTypes().length; i++)
+        {
+            if(ParseType(getTypes()[i]).compareTo("") != 0)
+                types.add(ParseType(getTypes()[i]));
+        }
+
+        return types;
+    }
+    private String ParseType(String str)
+    {
+        switch (str)
+        {
+            case "school":
+                return "Trường học";
+            case "establishment":
+                //return "Tổ chức";
+                return"";
+            case "point_of_interest":
+                return "";
+            case "restaurant":
+                return "Nhà hàng";
+            case "food":
+                return "Thức ăn";
+            case "gym":
+                return "Gym";
+            case "health":
+                return "Sức khỏe";
+            case "bus_station":
+                return "Trạm dừng xe buýt";
+            case "transit_station":
+                return "Trạm giao thông";
+            case "cafe":
+                return "Cà phê";
+            case "finance":
+                return "Tài chính";
+            case "store":
+                return "Cửa hàng";
+            case "atm":
+                return "ATM";
+            case "airport":
+                return "Sân bay";
+            case "hospital":
+                return "Bệnh viện";
+            case "movie_theater":
+                return "Rạp phim";
+            case "park":
+                return "Công viên";
+            case "spa":
+                return "Spa";
+            case "zoo":
+                return "Sở thú";
+            case "casino":
+                return "Sòng bạc";
+            case "bakery":
+                return "Tiệm bánh";
+            case "car_rental":
+                return "Thuê xe";
+            case "pharmacy":
+                return "Nhà thuốc";
+            case "embassy":
+                return "Đại sứ quán";
+            case "shopping_mall":
+                return "Mua sắm";
+            case "lodging":
+                return "Chỗ ở";
+            case "premise":
+                return "";
+            case "parking":
+                return "Chỗ đậu xe";
+            case "police":
+                return "Cảnh sát";
+            default:
+                return str;
+        }
     }
     public static final class Builder {
         private Location location;

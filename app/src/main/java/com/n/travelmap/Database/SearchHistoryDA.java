@@ -4,8 +4,14 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteStatement;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.n.travelmap.R;
 
 import java.io.ByteArrayOutputStream;
 import java.sql.Blob;
@@ -21,11 +27,12 @@ public class SearchHistoryDA {
 
 
     DatabaseProvider databaseProvider;
+    Context context;
 
     public SearchHistoryDA(Context context)
     {
         databaseProvider = new DatabaseProvider(context);
-
+        this.context = context;
     }
 
     public void AddSearchHistory(SavedPlace place)
@@ -41,7 +48,15 @@ public class SearchHistoryDA {
         insertStmt.bindDouble(4, place.getLocation().latitude);
         insertStmt.bindDouble(5,place.getLocation().longitude);
         insertStmt.bindString(6, place.getTypes());
-        insertStmt.bindBlob(7, place.getBytesImg());
+
+        if(place.getBitmap() != null)
+            insertStmt.bindBlob(7, place.getBytesImg());
+        else
+        {
+            Bitmap bitmap = drawableToBitmap(context.getResources().getDrawable(R.drawable.common_google_signin_btn_icon_light));
+            insertStmt.bindBlob(7, getBitmapAsByteArray(bitmap));
+        }
+
         insertStmt.executeInsert();
 
 
@@ -86,5 +101,28 @@ public class SearchHistoryDA {
         bitmap.compress(Bitmap.CompressFormat.PNG, 0, outputStream);
         return outputStream.toByteArray();
     }
+
+    public static Bitmap drawableToBitmap(Drawable drawable) {
+        if (drawable instanceof BitmapDrawable) {
+            return ((BitmapDrawable) drawable).getBitmap();
+        }
+
+        final int width = !drawable.getBounds().isEmpty() ? drawable
+                .getBounds().width() : drawable.getIntrinsicWidth();
+
+        final int height = !drawable.getBounds().isEmpty() ? drawable
+                .getBounds().height() : drawable.getIntrinsicHeight();
+
+        final Bitmap bitmap = Bitmap.createBitmap(width <= 0 ? 1 : width,
+                height <= 0 ? 1 : height, Bitmap.Config.ARGB_8888);
+
+        Log.v("Bitmap width - Height :", width + " : " + height);
+        Canvas canvas = new Canvas(bitmap);
+        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+        drawable.draw(canvas);
+
+        return bitmap;
+    }
+
 
 }

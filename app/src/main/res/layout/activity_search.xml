@@ -103,10 +103,21 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:backgroundTint="@android:color/transparent"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:layout_weight="1">
 
     </LinearLayout>
 
+    <LinearLayout
+        android:id="@+id/place_holder"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:backgroundTint="@android:color/transparent"
+        android:orientation="vertical"
+
+        android:layout_weight="0">
+
+    </LinearLayout>
     <!--<fragment-->
         <!--android:id="@+id/my_fragment"-->
         <!--android:name="com.n.myapplication.SearchMainMenuFragment"-->

@@ -24,7 +24,7 @@ public class NearbyResultFragment extends Fragment {
     ListView list;
 
 
-    List<SearchPlaceObject> resultList;
+    List<Place> places;
 
 
     public NearbyResultFragment() {
@@ -54,8 +54,9 @@ public class NearbyResultFragment extends Fragment {
     }
 
 
-    public void ShowResult(List<Place> places) {
+    public void ShowResult(final List<Place> places) {
 
+        this.places = places;
 
         final PlaceListViewAdapter_Place adapter = new    PlaceListViewAdapter_Place(getActivity(),places);
 
@@ -71,7 +72,7 @@ public class NearbyResultFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
-                //((SearchActivity)getActivity()).OnNearbyMenuItemClick();
+                ((SearchActivity)getActivity()).OnNearbyResultItemClick(places.get(position));
             }
         });
     }

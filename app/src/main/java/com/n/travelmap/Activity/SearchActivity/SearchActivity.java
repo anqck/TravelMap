@@ -71,6 +71,10 @@ public class SearchActivity extends BaseActivity {
     LinearLayout searchToolbar, showOnMap;
 
     LinearLayout dynamicContent;
+
+     GeoDataClient mGeoDataClient;
+
+     Task<PlacePhotoMetadataResponse> photoMetadataResponse ;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -210,6 +214,10 @@ public class SearchActivity extends BaseActivity {
 //                }
 //            }
 //        });
+
+        //Get Img
+        mGeoDataClient=   Places.getGeoDataClient(this, null);
+
 
     }
     @Override
@@ -384,10 +392,7 @@ public class SearchActivity extends BaseActivity {
     public void onSearchItemClick(final SearchPlaceObject searchPlaceObject) {
         editText.setText("");
 
-        //Get Img
-        final GeoDataClient mGeoDataClient=   Places.getGeoDataClient(this, null);
-
-        final Task<PlacePhotoMetadataResponse> photoMetadataResponse = mGeoDataClient.getPlacePhotos(searchPlaceObject.getPlaceID());
+        photoMetadataResponse = mGeoDataClient.getPlacePhotos(searchPlaceObject.getPlaceID());
 
         mGeoDataClient.getPlaceById(searchPlaceObject.getPlaceID()).addOnCompleteListener(new OnCompleteListener<PlaceBufferResponse>() {
             @Override
@@ -513,7 +518,7 @@ public class SearchActivity extends BaseActivity {
                 .key(getString(R.string.google_maps_key))
                 .latlng(10.870249,106.803735)
                 .type(s)
-                .radius(1500)
+                .radius(500)
                 .build()
                 .execute();
     }
@@ -526,5 +531,69 @@ public class SearchActivity extends BaseActivity {
 
         setResult(Activity.RESULT_OK, resultIntent);
         finish();
+    }
+
+    public void OnNearbyResultItemClick(final Place place) {
+
+
+        photoMetadataResponse = mGeoDataClient.getPlacePhotos(place.getPlaceId());
+
+        mGeoDataClient.getPlaceById(place.getPlaceId()).addOnCompleteListener(new OnCompleteListener<PlaceBufferResponse>() {
+            @Override
+            public void onComplete(@NonNull Task<PlaceBufferResponse> task) {
+                PlaceBufferResponse places = task.getResult();
+
+                final com.google.android.gms.location.places.Place myPlace = (com.google.android.gms.location.places.Place) places.get(0);
+
+                photoMetadataResponse.addOnCompleteListener(new OnCompleteListener<PlacePhotoMetadataResponse>() {
+                    @Override
+                    public void onComplete(@NonNull Task<PlacePhotoMetadataResponse> task) {
+                        // Get the list of photos.
+                        PlacePhotoMetadataResponse photos = task.getResult();
+                        // Get the PlacePhotoMetadataBuffer (metadata for all of the photos).
+                        PlacePhotoMetadataBuffer photoMetadataBuffer = photos.getPhotoMetadata();
+
+
+                        if(photoMetadataBuffer.getCount() != 0)
+                        {
+                            // Get the first photo in the list.
+                            PlacePhotoMetadata photoMetadata = photoMetadataBuffer.get(0);
+                            // Get a full-size bitmap for the photo.
+                            Task<PlacePhotoResponse> photoResponse = mGeoDataClient.getScaledPhoto(photoMetadata,75,75);
+                            photoResponse.addOnCompleteListener(new OnCompleteListener<PlacePhotoResponse>() {
+                                @Override
+                                public void onComplete(@NonNull Task<PlacePhotoResponse> task) {
+                                    PlacePhotoResponse photo = task.getResult();
+                                    //Bitmap bitmap = photo.getBitmap();
+
+                                    SearchHistoryDA searchHistoryDA = new SearchHistoryDA(SearchActivity.this);
+                                    searchHistoryDA.AddSearchHistory(new SavedPlace(new SearchPlaceObject(myPlace.getName().toString(),myPlace.getAddress().toString(), place.GetTypesTrans(),place.getPlaceId()),myPlace.getLatLng(),photo.getBitmap()));
+
+                                    List< MarkerTagObject> result = new ArrayList<>();
+                                    result.add(new MarkerTagObject(place.getPlaceId(),myPlace.getLatLng()));
+
+                                    ReturnResult(result);
+                                }
+                            });
+                        }
+                        else
+                        {
+                            SearchHistoryDA searchHistoryDA = new SearchHistoryDA(SearchActivity.this);
+                            searchHistoryDA.AddSearchHistory(new SavedPlace(new SearchPlaceObject(myPlace.getName().toString(),myPlace.getAddress().toString(), place.GetTypesTrans(),place.getPlaceId()),myPlace.getLatLng(),null));
+
+                            List< MarkerTagObject> result = new ArrayList<>();
+                            result.add(new MarkerTagObject(place.getPlaceId(),myPlace.getLatLng()));
+
+                            ReturnResult(result);
+                        }
+
+
+                    }
+
+                });
+            }
+        });
+
+
     }
 }
