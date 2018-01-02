@@ -36,6 +36,7 @@ public class SelectPlaceMenuFragment extends Fragment {
     }
 
     ListPopupWindow popup;
+    MarkerTagObject markerTagObject;
     String mPlaceID;
     private LatLng latLng;
 
@@ -77,7 +78,7 @@ public class SelectPlaceMenuFragment extends Fragment {
         btnMoveFrom.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((MainActivity)getActivity()).OnSetPlaceMoveFrom(mPlaceID);
+                ((MainActivity)getActivity()).OnSetPlaceMoveFrom(markerTagObject);
             }
         });
 
@@ -85,7 +86,7 @@ public class SelectPlaceMenuFragment extends Fragment {
         btnMoveTo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((MainActivity)getActivity()).OnSetPlaceMoveTo(mPlaceID);
+                ((MainActivity)getActivity()).OnSetPlaceMoveTo(markerTagObject);
 
                 };
 
@@ -121,7 +122,7 @@ public class SelectPlaceMenuFragment extends Fragment {
         btnRemove.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((MainActivity)getActivity()).DirectionRemovePlace(mPlaceID,latLng);
+                ((MainActivity)getActivity()).DirectionRemovePlace(markerTagObject);
             }
         });
 
@@ -260,4 +261,58 @@ public class SelectPlaceMenuFragment extends Fragment {
             }
         });
     }
+
+    public void ShowMenu(SelectPlaceMenuState state, MarkerTagObject PlaceID)
+    {
+        markerTagObject = PlaceID;
+
+        if(state == SelectPlaceMenuState.Normal)
+        {
+
+
+            normalView.setVisibility(View.VISIBLE);
+            removeView.setVisibility(View.INVISIBLE);
+            extendView.setVisibility(View.INVISIBLE);
+        }
+        else if(state == SelectPlaceMenuState.Remove)
+        {
+
+
+            normalView.setVisibility(View.INVISIBLE);
+            removeView.setVisibility(View.VISIBLE);
+            extendView.setVisibility(View.INVISIBLE);
+        }
+        else
+        {
+
+
+            normalView.setVisibility(View.INVISIBLE);
+            removeView.setVisibility(View.INVISIBLE);
+            extendView.setVisibility(View.VISIBLE);
+        }
+
+        view.animate().translationY(0).setDuration(90).setListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+                view.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+
+
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animation) {
+
+            }
+
+            @Override
+            public void onAnimationRepeat(Animator animation) {
+
+            }
+        });
+    }
+
 }

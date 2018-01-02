@@ -7,7 +7,9 @@ package com.n.travelmap.Activity.SearchActivity;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +17,11 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.google.android.gms.location.places.GeoDataClient;
+import com.google.android.gms.location.places.PlaceBufferResponse;
+import com.google.android.gms.location.places.Places;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.n.travelmap.Database.SavedPlace;
 import com.n.travelmap.Database.SearchHistoryDA;
 import com.n.travelmap.MarkerTagObject;
@@ -63,9 +70,8 @@ public class SearchHistoryFragment extends Fragment{
 
             @Override
             public void onItemClick(AdapterView<?> parent, View view,
-                                    int position, long id) {
+                                    final int position, long id) {
                // Toast.makeText(SearchHistoryFragment.this.getActivity(), "You Clicked at " +web[+ position], Toast.LENGTH_SHORT).show();
-
 
 
 
@@ -73,6 +79,7 @@ public class SearchHistoryFragment extends Fragment{
                 result.add(new MarkerTagObject(placeList.get(position).getPlaceID(),placeList.get(position).getLocation()));
 
                 ((SearchActivity)getActivity()).ReturnResult(result);
+
 
 
             }

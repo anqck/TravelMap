@@ -79,11 +79,15 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
     LocationManager locationManager;
     LocationListener locationListenerGPS;
 
+
+    //SearchMarker
+    List<Marker> searchMarker;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-
+        searchMarker = new ArrayList<>();
     }
 
     @Override
@@ -279,7 +283,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
 
     public void SetMoveFromMarker(MarkerTagObject markerObject) {
         if (moveFromMarker != null)
-            moveFromMarker.remove();
+            ClearMoveFromMarker();
 
         if(markerObject.getPlaceID().compareTo("MyLocation") == 0)
         {
@@ -287,10 +291,32 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
         }
         else
         {
-            moveFromMarker = mGoogleMap.addMarker(new MarkerOptions().position(currentSelectedMarker.getPosition()).title("Move From").icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_move_from)));
+            if(markerObject.getTag().compareTo("SearchResult") == 0)
+            {
 
-            if (currentSelectedMarker != null)
-                currentSelectedMarker.remove();
+                markerObject.setTag("");
+                for(int i = 0;i < searchMarker.size(); i++)
+                {
+                    if(markerObject.getLatLng().toString().compareTo(searchMarker.get(i).getPosition().toString()) == 0)
+                    {
+                        moveFromMarker = mGoogleMap.addMarker(new MarkerOptions().position(searchMarker.get(i).getPosition()).title("Move From").icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_move_from)));
+
+                        searchMarker.get(i).remove();
+
+                        searchMarker.get(i).setTag(new MarkerTagObject(markerObject.getPlaceID(),markerObject.getLatLng(),"SearchResult"));
+                        break;
+                    }
+                }
+
+            }
+            else
+            {
+                moveFromMarker = mGoogleMap.addMarker(new MarkerOptions().position(currentSelectedMarker.getPosition()).title("Move From").icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_move_from)));
+
+                if (currentSelectedMarker != null)
+                    currentSelectedMarker.remove();
+            }
+
         }
 
         markerObject.setLatLng(moveFromMarker.getPosition());
@@ -303,7 +329,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
 
     public void SetMoveToMarker(MarkerTagObject markerObject) {
         if (moveToMarker != null)
-            moveToMarker.remove();
+            ClearMoveToMarker();
 
 
         if(markerObject.getPlaceID().compareTo("MyLocation") == 0)
@@ -312,10 +338,32 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
         }
         else
         {
-            moveToMarker = mGoogleMap.addMarker(new MarkerOptions().position(currentSelectedMarker.getPosition()).title("Move To").icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_move_to)));
+            if(markerObject.getTag().compareTo("SearchResult") == 0)
+            {
 
-            if (currentSelectedMarker != null)
-                currentSelectedMarker.remove();
+                markerObject.setTag("");
+                for(int i = 0;i < searchMarker.size(); i++)
+                {
+                    if(markerObject.getLatLng().toString().compareTo(searchMarker.get(i).getPosition().toString()) == 0)
+                    {
+                        moveToMarker = mGoogleMap.addMarker(new MarkerOptions().position(searchMarker.get(i).getPosition()).title("Move To").icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_move_to)));
+
+                        searchMarker.get(i).remove();
+
+                        searchMarker.get(i).setTag(new MarkerTagObject(markerObject.getPlaceID(),markerObject.getLatLng(),"SearchResult"));
+                        break;
+                    }
+                }
+
+            }
+            else
+            {
+                moveToMarker = mGoogleMap.addMarker(new MarkerOptions().position(currentSelectedMarker.getPosition()).title("Move To").icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_move_to)));
+
+                if (currentSelectedMarker != null)
+                    currentSelectedMarker.remove();
+            }
+
         }
 
 
@@ -376,6 +424,22 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
                     myLocationMarker = mGoogleMap.addMarker(new MarkerOptions().position(new LatLng(lastGPSLocation.latitude, lastGPSLocation.longitude)).title("My Location").icon(BitmapDescriptorFactory.fromResource(R.drawable.map_marker)));
                     myLocationMarker.setTag(new MarkerTagObject("MyLocation"));
                 }
+
+
+                for(int i = 0;i < searchMarker.size(); i++)
+                {
+                    if(moveFromMarker.getPosition().toString().compareTo(searchMarker.get(i).getPosition().toString()) == 0)
+                    {
+                        Marker temp = mGoogleMap.addMarker(new MarkerOptions().position(searchMarker.get(i).getPosition()).title("Searched").icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_blue)));
+                        temp.setTag(new MarkerTagObject(((MarkerTagObject)searchMarker.get(i).getTag()).getPlaceID(),((MarkerTagObject)searchMarker.get(i).getTag()).getLatLng(), "SearchResult"));
+
+                        searchMarker.remove(i);
+                        searchMarker.add(temp);
+
+                        break;
+                    }
+                }
+
             }
 
 
@@ -396,6 +460,20 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
                 {
                     myLocationMarker = mGoogleMap.addMarker(new MarkerOptions().position(new LatLng(lastGPSLocation.latitude, lastGPSLocation.longitude)).title("My Location").icon(BitmapDescriptorFactory.fromResource(R.drawable.map_marker)));
                     myLocationMarker.setTag(new MarkerTagObject("MyLocation"));
+                }
+
+                for(int i = 0;i < searchMarker.size(); i++)
+                {
+                    if(moveToMarker.getPosition().toString().compareTo(searchMarker.get(i).getPosition().toString()) == 0)
+                    {
+                        Marker temp = mGoogleMap.addMarker(new MarkerOptions().position(searchMarker.get(i).getPosition()).title("Searched").icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_blue)));
+                        temp.setTag(new MarkerTagObject(((MarkerTagObject)searchMarker.get(i).getTag()).getPlaceID(),((MarkerTagObject)searchMarker.get(i).getTag()).getLatLng(), "SearchResult"));
+
+                        searchMarker.remove(i);
+                        searchMarker.add(temp);
+
+                        break;
+                    }
                 }
             }
 
@@ -521,6 +599,39 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
 
     public Marker GetCurrentSelectedMarker() {
         return this.currentSelectedMarker;
+    }
+
+    public void SetSearchMarker(List<MarkerTagObject> markerTagObjects)
+    {
+        if(searchMarker!=null)
+        {
+            for(Marker m : searchMarker)
+            {
+                m.remove();
+            }
+
+            searchMarker.clear();
+        }
+
+        for(MarkerTagObject markerTagObject : markerTagObjects)
+        {
+            Marker temp = mGoogleMap.addMarker(new MarkerOptions().position(markerTagObject.getLatLng()).title("Searched").icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_blue)));
+            temp.setTag(new MarkerTagObject(markerTagObject.getPlaceID(),markerTagObject.getLatLng(), "SearchResult"));
+
+            searchMarker.add(temp);
+        }
+
+        if(markerTagObjects.size() == 1)
+        {
+            final CameraPosition cameraPosition = new CameraPosition.Builder()
+                    .target(searchMarker.get(0).getPosition())
+                    .zoom(18)
+                    .bearing(90)
+                    .tilt(30)
+                    .build();
+
+            mGoogleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+        }
     }
 }
 

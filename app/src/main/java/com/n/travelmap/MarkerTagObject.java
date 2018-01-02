@@ -7,32 +7,47 @@ import java.io.Serializable;
 public class MarkerTagObject extends Object implements Serializable
 {
         private String placeID;
-        private transient LatLng  latLng;
+        private double latitude, longitude;
+        private String tag;
+        //private transient LatLng  latLng;
 
     MarkerTagObject()
     {
         placeID = "";
-        latLng = null;
+        //latLng = null;
     }
 
     MarkerTagObject(String placeID)
     {
         this.placeID = placeID;
-        latLng = null;
+        tag = "";
+        //latLng = null;
     }
     public MarkerTagObject(String placeID, LatLng location)
     {
         this.placeID = placeID;
-        latLng = location;
+        latitude = location.latitude;
+        longitude = location.longitude;
+        tag = "";
+        //latLng = location;
     }
 
+    public MarkerTagObject(String placeID, LatLng location, String tag)
+    {
+        this.placeID = placeID;
+        latitude = location.latitude;
+        longitude = location.longitude;
+        this.tag = tag;
+        //latLng = location;
+    }
 
     public LatLng getLatLng() {
-        return latLng;
+        return new LatLng(latitude,longitude);
     }
 
-    public void setLatLng(LatLng latLng) {
-        this.latLng = latLng;
+    public void setLatLng(LatLng location) {
+        latitude = location.latitude;
+        longitude = location.longitude;
     }
 
     public String getPlaceID() {
@@ -41,5 +56,13 @@ public class MarkerTagObject extends Object implements Serializable
 
     public void setPlaceID(String placeID) {
         this.placeID = placeID;
+    }
+
+    public String getTag() {
+        return tag;
+    }
+
+    public void setTag(String tag) {
+        this.tag = tag;
     }
 }

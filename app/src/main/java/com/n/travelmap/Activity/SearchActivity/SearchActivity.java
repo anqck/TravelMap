@@ -47,6 +47,7 @@ import com.n.travelmap.MarkerTagObject;
 import com.n.travelmap.R;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -391,46 +392,60 @@ public class SearchActivity extends BaseActivity {
         mGeoDataClient.getPlaceById(searchPlaceObject.getPlaceID()).addOnCompleteListener(new OnCompleteListener<PlaceBufferResponse>() {
             @Override
             public void onComplete(@NonNull Task<PlaceBufferResponse> task) {
+                PlaceBufferResponse places = task.getResult();
 
-            }
-        });
+                final com.google.android.gms.location.places.Place myPlace = (com.google.android.gms.location.places.Place) places.get(0);
 
-        photoMetadataResponse.addOnCompleteListener(new OnCompleteListener<PlacePhotoMetadataResponse>() {
-            @Override
-            public void onComplete(@NonNull Task<PlacePhotoMetadataResponse> task) {
-                // Get the list of photos.
-                PlacePhotoMetadataResponse photos = task.getResult();
-                // Get the PlacePhotoMetadataBuffer (metadata for all of the photos).
-                PlacePhotoMetadataBuffer photoMetadataBuffer = photos.getPhotoMetadata();
+                photoMetadataResponse.addOnCompleteListener(new OnCompleteListener<PlacePhotoMetadataResponse>() {
+                    @Override
+                    public void onComplete(@NonNull Task<PlacePhotoMetadataResponse> task) {
+                        // Get the list of photos.
+                        PlacePhotoMetadataResponse photos = task.getResult();
+                        // Get the PlacePhotoMetadataBuffer (metadata for all of the photos).
+                        PlacePhotoMetadataBuffer photoMetadataBuffer = photos.getPhotoMetadata();
 
 
-                if(photoMetadataBuffer.getCount() != 0)
-                {
-                    // Get the first photo in the list.
-                    PlacePhotoMetadata photoMetadata = photoMetadataBuffer.get(0);
-                    // Get a full-size bitmap for the photo.
-                    Task<PlacePhotoResponse> photoResponse = mGeoDataClient.getScaledPhoto(photoMetadata,75,75);
-                    photoResponse.addOnCompleteListener(new OnCompleteListener<PlacePhotoResponse>() {
-                        @Override
-                        public void onComplete(@NonNull Task<PlacePhotoResponse> task) {
-                            PlacePhotoResponse photo = task.getResult();
-                            //Bitmap bitmap = photo.getBitmap();
+                        if(photoMetadataBuffer.getCount() != 0)
+                        {
+                            // Get the first photo in the list.
+                            PlacePhotoMetadata photoMetadata = photoMetadataBuffer.get(0);
+                            // Get a full-size bitmap for the photo.
+                            Task<PlacePhotoResponse> photoResponse = mGeoDataClient.getScaledPhoto(photoMetadata,75,75);
+                            photoResponse.addOnCompleteListener(new OnCompleteListener<PlacePhotoResponse>() {
+                                @Override
+                                public void onComplete(@NonNull Task<PlacePhotoResponse> task) {
+                                    PlacePhotoResponse photo = task.getResult();
+                                    //Bitmap bitmap = photo.getBitmap();
 
-                            SearchHistoryDA searchHistoryDA = new SearchHistoryDA(SearchActivity.this);
-                            searchHistoryDA.AddSearchHistory(new SavedPlace(searchPlaceObject,new LatLng(0,0),photo.getBitmap()));
+                                    SearchHistoryDA searchHistoryDA = new SearchHistoryDA(SearchActivity.this);
+                                    searchHistoryDA.AddSearchHistory(new SavedPlace(searchPlaceObject,myPlace.getLatLng(),photo.getBitmap()));
+
+                                    List< MarkerTagObject> result = new ArrayList<>();
+                                    result.add(new MarkerTagObject(searchPlaceObject.getPlaceID(),myPlace.getLatLng()));
+
+                                    ReturnResult(result);
+                                }
+                            });
                         }
-                    });
-                }
-                else
-                {
-                    SearchHistoryDA searchHistoryDA = new SearchHistoryDA(SearchActivity.this);
-                    searchHistoryDA.AddSearchHistory(new SavedPlace(searchPlaceObject,new LatLng(0,0),null));
-                }
+                        else
+                        {
+                            SearchHistoryDA searchHistoryDA = new SearchHistoryDA(SearchActivity.this);
+                            searchHistoryDA.AddSearchHistory(new SavedPlace(searchPlaceObject,myPlace.getLatLng(),null));
+
+                            List< MarkerTagObject> result = new ArrayList<>();
+                            result.add(new MarkerTagObject(searchPlaceObject.getPlaceID(),myPlace.getLatLng()));
+
+                            ReturnResult(result);
+                        }
 
 
+                    }
+
+                });
             }
-
         });
+
+
 
     }
 

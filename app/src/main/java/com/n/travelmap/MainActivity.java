@@ -394,7 +394,7 @@ public class MainActivity extends BaseActivity {
         //behavior.setState(BottomSheetBehaviorGoogleMapsLike.STATE_HIDDEN);
         bottomBar.setVisibility(View.INVISIBLE);
         directionMenu.HideMenu();
-        selectPlaceMenuFragment.ShowMenu(SelectPlaceMenuFragment.SelectPlaceMenuState.Normal, "");
+
 
 
         try {
@@ -428,6 +428,7 @@ public class MainActivity extends BaseActivity {
 
             bottomInformationSheetController.UpdateImageAdapter(bottomSheetInformation);
 
+            selectPlaceMenuFragment.ShowMenu(SelectPlaceMenuFragment.SelectPlaceMenuState.Normal, new MarkerTagObject("",new LatLng(obj.getLatitude(),obj.getLongitude())));
             if (flagShowInfo)
                 behavior.setState(BottomSheetBehaviorGoogleMapsLike.STATE_COLLAPSED);
 
@@ -445,7 +446,7 @@ public class MainActivity extends BaseActivity {
         behavior.setState(BottomSheetBehaviorGoogleMapsLike.STATE_HIDDEN);
         bottomBar.setVisibility(View.INVISIBLE);
         directionMenu.HideMenu();
-        selectPlaceMenuFragment.ShowMenu(SelectPlaceMenuFragment.SelectPlaceMenuState.Normal, pointOfInterest.placeId);
+        selectPlaceMenuFragment.ShowMenu(SelectPlaceMenuFragment.SelectPlaceMenuState.Normal, new MarkerTagObject(pointOfInterest.placeId,pointOfInterest.latLng) );
 
         bottomSheetInformation = new BottomSheetInformation();
 
@@ -529,14 +530,15 @@ public class MainActivity extends BaseActivity {
 
     }
 
-    public void OnSetPlaceMoveFrom(String placeId) {
+    public void OnSetPlaceMoveFrom(MarkerTagObject placeId) {
         //UI
         mIsOnDirectionMode = true;
         selectPlaceMenuFragment.HideMenu();
         bottomSheet.fullScroll(View.FOCUS_UP);
         behavior.setState(BottomSheetBehaviorGoogleMapsLike.STATE_HIDDEN);
         actionBar.show();
-        mapsFragment.SetMoveFromMarker(new MarkerTagObject(placeId));
+
+        mapsFragment.SetMoveFromMarker(placeId);
 
         bottomBar.setVisibility(View.VISIBLE);
         //bottomMenuFragment.OnSetMoveFrom();
@@ -567,7 +569,7 @@ public class MainActivity extends BaseActivity {
     }
 
 
-    public void OnSetPlaceMoveTo(String placeId) {
+    public void OnSetPlaceMoveTo(MarkerTagObject placeId) {
         //UI
         mIsOnDirectionMode = true;
         selectPlaceMenuFragment.HideMenu();
@@ -575,7 +577,7 @@ public class MainActivity extends BaseActivity {
         behavior.setState(BottomSheetBehaviorGoogleMapsLike.STATE_HIDDEN);
         actionBar.show();
 
-        mapsFragment.SetMoveToMarker(new MarkerTagObject(placeId));
+        mapsFragment.SetMoveToMarker(placeId);
 
         haveResult = false;
 
@@ -765,7 +767,7 @@ public class MainActivity extends BaseActivity {
             directionMenu.HideMenu();
 
 
-            selectPlaceMenuFragment.ShowMenu(SelectPlaceMenuFragment.SelectPlaceMenuState.Remove, markerTagObject.getPlaceID(), markerTagObject.getLatLng());
+            selectPlaceMenuFragment.ShowMenu(SelectPlaceMenuFragment.SelectPlaceMenuState.Remove, markerTagObject);
 
 
             try {
@@ -811,7 +813,7 @@ public class MainActivity extends BaseActivity {
             if (mapsFragment.GetCurrentMoveFromMarker() != null) {
                 if (((MarkerTagObject) mapsFragment.GetCurrentMoveFromMarker().getTag()) != null) {
                     if (((MarkerTagObject) mapsFragment.GetCurrentMoveFromMarker().getTag()).getPlaceID().compareTo("MyLocation") == 0) {
-                        selectPlaceMenuFragment.ShowMenu(SelectPlaceMenuFragment.SelectPlaceMenuState.Remove, markerTagObject.getPlaceID());
+                        selectPlaceMenuFragment.ShowMenu(SelectPlaceMenuFragment.SelectPlaceMenuState.Remove, markerTagObject);
                         RemoveMenuFlag = true;
                     }
                 }
@@ -822,14 +824,14 @@ public class MainActivity extends BaseActivity {
             if (mapsFragment.GetCurrentMoveToMarker() != null) {
                 if (((MarkerTagObject) mapsFragment.GetCurrentMoveToMarker().getTag()) != null) {
                     if (((MarkerTagObject) mapsFragment.GetCurrentMoveToMarker().getTag()).getPlaceID().compareTo("MyLocation") == 0) {
-                        selectPlaceMenuFragment.ShowMenu(SelectPlaceMenuFragment.SelectPlaceMenuState.Remove, markerTagObject.getPlaceID());
+                        selectPlaceMenuFragment.ShowMenu(SelectPlaceMenuFragment.SelectPlaceMenuState.Remove, markerTagObject);
                         RemoveMenuFlag = true;
                     }
                 }
             }
 
             if (!RemoveMenuFlag)
-                selectPlaceMenuFragment.ShowMenu(SelectPlaceMenuFragment.SelectPlaceMenuState.Normal, markerTagObject.getPlaceID());
+                selectPlaceMenuFragment.ShowMenu(SelectPlaceMenuFragment.SelectPlaceMenuState.Normal, markerTagObject);
 
 
             behavior.setState(BottomSheetBehaviorGoogleMapsLike.STATE_HIDDEN);
@@ -840,7 +842,12 @@ public class MainActivity extends BaseActivity {
         } else {
             Log.d("MAP:", "Poi Clicked!");
             behavior.setState(BottomSheetBehaviorGoogleMapsLike.STATE_HIDDEN);
-            selectPlaceMenuFragment.ShowMenu(SelectPlaceMenuFragment.SelectPlaceMenuState.Remove, markerTagObject.getPlaceID());
+
+            if(markerTagObject.getTag().compareTo("SearchResult") == 0)
+                selectPlaceMenuFragment.ShowMenu(SelectPlaceMenuFragment.SelectPlaceMenuState.Normal, markerTagObject);
+            else
+                selectPlaceMenuFragment.ShowMenu(SelectPlaceMenuFragment.SelectPlaceMenuState.Remove, markerTagObject);
+
             bottomBar.setVisibility(View.INVISIBLE);
             directionMenu.HideMenu();
             bottomSheetInformation = new BottomSheetInformation();
@@ -940,19 +947,19 @@ public class MainActivity extends BaseActivity {
             if (bundle != null)
             {
                 List<MarkerTagObject> myObject = (List<MarkerTagObject>) bundle.getSerializable("LIST PLACES");
-
+                mapsFragment.SetSearchMarker(myObject);
             }
 
-            int c = 0;
+            //int c = 0;
         }
     }
 
-    public void DirectionRemovePlace(String mPlaceID, LatLng latLng) {
+    public void DirectionRemovePlace(MarkerTagObject markerTagObject) {
         if (mapsFragment.GetCurrentMoveToMarker() != null) {
             if (mapsFragment.GetCurrentMoveToMarker().getTag() != null) {
-                if (((MarkerTagObject) mapsFragment.GetCurrentMoveToMarker().getTag()).getPlaceID().compareTo(mPlaceID) == 0) {
+                if (((MarkerTagObject) mapsFragment.GetCurrentMoveToMarker().getTag()).getPlaceID().compareTo(markerTagObject.getPlaceID()) == 0) {
                     if (((MarkerTagObject) mapsFragment.GetCurrentMoveToMarker().getTag()).getPlaceID().compareTo("") == 0) {
-                        if (((MarkerTagObject) mapsFragment.GetCurrentMoveToMarker().getTag()).getLatLng().toString().compareTo(latLng.toString()) == 0) {
+                        if (((MarkerTagObject) mapsFragment.GetCurrentMoveToMarker().getTag()).getLatLng().toString().compareTo(markerTagObject.getLatLng().toString()) == 0) {
                             selectPlaceMenuFragment.HideMenu();
                             behavior.setState(BottomSheetBehaviorGoogleMapsLike.STATE_HIDDEN);
                             bottomBar.setVisibility(View.VISIBLE);
@@ -1017,9 +1024,9 @@ public class MainActivity extends BaseActivity {
 
         if (mapsFragment.GetCurrentMoveFromMarker() != null) {
             if (mapsFragment.GetCurrentMoveFromMarker().getTag() != null) {
-                if (((MarkerTagObject) mapsFragment.GetCurrentMoveFromMarker().getTag()).getPlaceID().compareTo(mPlaceID) == 0) {
+                if (((MarkerTagObject) mapsFragment.GetCurrentMoveFromMarker().getTag()).getPlaceID().compareTo(markerTagObject.getPlaceID()) == 0) {
                     if (((MarkerTagObject) mapsFragment.GetCurrentMoveFromMarker().getTag()).getPlaceID().compareTo("") == 0) {
-                        if (((MarkerTagObject) mapsFragment.GetCurrentMoveFromMarker().getTag()).getLatLng().toString().compareTo(latLng.toString()) == 0) {
+                        if (((MarkerTagObject) mapsFragment.GetCurrentMoveFromMarker().getTag()).getLatLng().toString().compareTo(markerTagObject.getLatLng().toString()) == 0) {
                             selectPlaceMenuFragment.HideMenu();
                             behavior.setState(BottomSheetBehaviorGoogleMapsLike.STATE_HIDDEN);
                             bottomBar.setVisibility(View.VISIBLE);
