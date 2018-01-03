@@ -69,6 +69,7 @@ public class SearchHistoryFragment extends Fragment{
                 result.add(new MarkerTagObject(placeList.get(position).getPlaceID(),placeList.get(position).getLocation()));
 
                 ((MainActivity)getActivity()).getSearchFragment().ReturnResult(result);
+                ((MainActivity)getActivity()).OnMainTabClick();
 
 
 

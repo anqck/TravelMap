@@ -267,8 +267,8 @@ public class SearchFragment extends Fragment {
 //    }
 
     public  void switchToA() {
-
-        ((MainActivity)getActivity()).SetActionBarState(MainActivity.ActionBarState.SearchMode_SearchToolbar);
+        //if(view.getVisibility() == View.VISIBLE)
+            ((MainActivity)getActivity()).SetActionBarState(MainActivity.ActionBarState.SearchMode_SearchToolbar);
 
 
         FragmentManager fragmentManager = getChildFragmentManager();
@@ -345,30 +345,33 @@ public class SearchFragment extends Fragment {
 
 
                 ((MainActivity)getActivity()).SetActionBarState(MainActivity.ActionBarState.SearchMode_ShowOnMap);
+
+                FragmentManager fragmentManager = getChildFragmentManager();
+
+                if(fragmentManager.findFragmentByTag("NEARBY_RESULT") != null) {
+                    //if the fragment exists, show it.
+                    fragmentManager.beginTransaction().show(fragmentManager.findFragmentByTag("NEARBY_RESULT")).commit();
+                } else {
+                    //if the fragment does not exist, add it to fragment manager.
+                    fragmentManager.beginTransaction().add(R.id.container, new SearchAutoCompleteFragment(), "NEARBY_RESULT").commit();
+                }
+
+                if(fragmentManager.findFragmentByTag("MAIN_MENU") != null){
+                    //if the other fragment is visible, hide it.
+                    fragmentManager.beginTransaction().hide(fragmentManager.findFragmentByTag("MAIN_MENU")).commit();
+                }
+
+                if(fragmentManager.findFragmentByTag("SEARCH_AUTOCOMPLETE") != null){
+                    //if the other fragment is visible, hide it.
+                    fragmentManager.beginTransaction().hide(fragmentManager.findFragmentByTag("SEARCH_AUTOCOMPLETE")).commit();
+                }
+
+                mCurrentFragmentOnScreen = "NEARBY_RESULT";
             }
         });
 
 
-        FragmentManager fragmentManager = getChildFragmentManager();
 
-        if(fragmentManager.findFragmentByTag("NEARBY_RESULT") != null) {
-            //if the fragment exists, show it.
-            fragmentManager.beginTransaction().show(fragmentManager.findFragmentByTag("NEARBY_RESULT")).commit();
-        } else {
-            //if the fragment does not exist, add it to fragment manager.
-            fragmentManager.beginTransaction().add(R.id.container, new SearchAutoCompleteFragment(), "NEARBY_RESULT").commit();
-        }
-        if(fragmentManager.findFragmentByTag("MAIN_MENU") != null){
-            //if the other fragment is visible, hide it.
-            fragmentManager.beginTransaction().hide(fragmentManager.findFragmentByTag("MAIN_MENU")).commit();
-        }
-
-        if(fragmentManager.findFragmentByTag("SEARCH_AUTOCOMPLETE") != null){
-            //if the other fragment is visible, hide it.
-            fragmentManager.beginTransaction().hide(fragmentManager.findFragmentByTag("SEARCH_AUTOCOMPLETE")).commit();
-        }
-
-        mCurrentFragmentOnScreen = "NEARBY_RESULT";
 
     }
 
@@ -419,6 +422,7 @@ public class SearchFragment extends Fragment {
                                     waitDialog.cancel();
                                     ReturnResult(result);
                                     ReturnToSearchMenu();
+                                    ((MainActivity)getActivity()).OnMainTabClick();
                                     fragA.UpdateHistoryList();
 
 
@@ -436,6 +440,7 @@ public class SearchFragment extends Fragment {
                             waitDialog.cancel();
                             ReturnResult(result);
                             ReturnToSearchMenu();
+                            ((MainActivity)getActivity()).OnMainTabClick();
                             fragA.UpdateHistoryList();
 
 
@@ -518,7 +523,7 @@ public class SearchFragment extends Fragment {
                     }
                 })
                 .key(getString(R.string.google_maps_key))
-                .latlng(10.870249,106.803735)
+                .latlng(((MainActivity)getActivity()).getMapsFragment().GetCurrentCameraPos().latitude,((MainActivity)getActivity()).getMapsFragment().GetCurrentCameraPos().longitude)
                 .type(s)
                 .radius(500)
                 .build()
@@ -529,7 +534,7 @@ public class SearchFragment extends Fragment {
     {
 
         ((MainActivity)getActivity()).OnSearchResultReturn(result);
-        ((MainActivity)getActivity()).OnMainTabClick();
+
         ((MainActivity)getActivity()).getBottomBar().selectTabAtPosition(0);
 //        Intent resultIntent = new Intent(getActivity(),MainActivity.class);
 //
@@ -582,8 +587,10 @@ public class SearchFragment extends Fragment {
 
                                     waitDialog.cancel();
 
+
                                     ReturnResult(result);
                                     switchToA();
+                                    ((MainActivity)getActivity()).OnMainTabClick();
                                     //ReturnToSearchMenu();
                                     fragA.UpdateHistoryList();
                                 }
@@ -598,8 +605,11 @@ public class SearchFragment extends Fragment {
                             result.add(new MarkerTagObject(place.getPlaceId(),myPlace.getLatLng()));
 
                             waitDialog.cancel();
+
+
                             ReturnResult(result);
                             switchToA();
+                            ((MainActivity)getActivity()).OnMainTabClick();
                             //ReturnToSearchMenu();
                             fragA.UpdateHistoryList();
                         }

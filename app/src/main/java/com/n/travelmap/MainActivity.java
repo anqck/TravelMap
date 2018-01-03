@@ -44,6 +44,13 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.PointOfInterest;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 import com.n.travelmap.Activity.FavoritesActivity.FavoritesFragment;
 import com.n.travelmap.Activity.SearchActivity.SearchFragment;
 import com.n.travelmap.Database.DatabaseProvider;
@@ -154,6 +161,8 @@ public class MainActivity extends BaseActivity {
             actionBar.setTitle(" ");
         }
         actionBar.hide();
+
+
         actionBar_search = findViewById(R.id.search_toolbar);
         actionBar_direction = findViewById(R.id.actionbar_direction);
         actionBar_showonmap = findViewById(R.id.show_on_map_layout);
@@ -321,7 +330,9 @@ public class MainActivity extends BaseActivity {
 
         //Database
         DatabaseProvider.Init(this);
-          favoritesDA = new FavoritesDA(this);
+        favoritesDA = new FavoritesDA(this);
+
+
     }
 
     private View.OnClickListener TravelModeButtonOnClick() {
@@ -429,13 +440,13 @@ public class MainActivity extends BaseActivity {
 
     }
 
-    public void OnMapLongClickedCallback() {
+    public void OnMapLongClickedCallback(LatLng latLng) {
         flagShowInfo = true;
 
         Log.d("MAP:", "Long Clicked!");
 
 
-        //behavior.setState(BottomSheetBehaviorGoogleMapsLike.STATE_HIDDEN);
+        selectPlaceMenuFragment.ShowMenu(SelectPlaceMenuFragment.SelectPlaceMenuState.Normal, new MarkerTagObject("",new LatLng(latLng.latitude,latLng.longitude)));
         bottomBar.setVisibility(View.INVISIBLE);
         directionMenu.HideMenu();
 
@@ -446,6 +457,8 @@ public class MainActivity extends BaseActivity {
             List<Address> address = geocoder.getFromLocation(mapsFragment.GetCurrentSelectedMarker().getPosition().latitude, mapsFragment.GetCurrentSelectedMarker().getPosition().longitude, 1);
 
             Address obj = address.get(0);
+
+
 
             //latLng = new LatLng(obj.getLatitude(), obj.getLongitude());
 
@@ -472,8 +485,7 @@ public class MainActivity extends BaseActivity {
 
             bottomInformationSheetController.UpdateImageAdapter(bottomSheetInformation);
 
-            selectPlaceMenuFragment.ShowMenu(SelectPlaceMenuFragment.SelectPlaceMenuState.Normal, new MarkerTagObject("",new LatLng(obj.getLatitude(),obj.getLongitude())));
-            if (flagShowInfo)
+           if (flagShowInfo)
                 behavior.setState(BottomSheetBehaviorGoogleMapsLike.STATE_COLLAPSED);
 
         } catch (IOException e) {
@@ -785,14 +797,17 @@ public class MainActivity extends BaseActivity {
                 case SearchMode_SearchToolbar:
                     getBottomBar().selectTabAtPosition(0,true);
                     OnMainTabClick();
+                    break;
                 case SearchMode_ShowOnMap:
                     searchFragment.switchToA();
+                    break;
                 case Normal:
                     if(favoritesFragment.GetVisible() == View.VISIBLE)
                     {
                         getBottomBar().selectTabAtPosition(0,true);
                         OnMainTabClick();
                     }
+                    break;
 
             }
 
@@ -920,11 +935,60 @@ public class MainActivity extends BaseActivity {
                 selectPlaceMenuFragment.ShowMenu(SelectPlaceMenuFragment.SelectPlaceMenuState.Normal, markerTagObject);
 
 
+            flagShowInfo = true;
             behavior.setState(BottomSheetBehaviorGoogleMapsLike.STATE_HIDDEN);
             bottomBar.setVisibility(View.INVISIBLE);
             directionMenu.HideMenu();
             bottomSheetInformation = new BottomSheetInformation();
-            ;
+
+            try {
+                Geocoder geocoder = new Geocoder(getApplicationContext(), Locale.getDefault());
+                List<Address> address = geocoder.getFromLocation(markerTagObject.getLatLng().latitude, markerTagObject.getLatLng().longitude, 1);
+
+                Address obj = address.get(0);
+
+                //latLng = new LatLng(obj.getLatitude(), obj.getLongitude());
+
+                final String addressText = String.format("%s, %s", obj.getMaxAddressLineIndex() > 0 ? obj.getAddressLine(0) : "",
+                        obj.getCountryName());
+
+
+
+                bottomSheetInformation = new BottomSheetInformation();
+
+                // obj.getAddressLine(0).replaceAll(obj.getFeatureName(), "").substring(1);
+
+                bottomInformationSheetController.SetBottomSheetTitle(obj.getFeatureName());
+
+                StringBuilder stringBuilder = new StringBuilder("");
+                for(int i = 0; i <= obj.getMaxAddressLineIndex(); i++)
+                {
+                    stringBuilder.append(obj.getAddressLine(i) );
+
+                    if(i != obj.getMaxAddressLineIndex())
+                    {
+                        stringBuilder.append(", " );
+                    }
+                }
+
+                bottomInformationSheetController.SetBottomSheetSubTitle(stringBuilder.toString().replaceAll(obj.getFeatureName(), ""));
+
+                bottomInformationSheetController.SetInfoText1(stringBuilder.toString());
+
+                bottomInformationSheetController.SetInfoText2(getResources().getString(R.string.NoInformation));
+                bottomInformationSheetController.SetInfoText3(getResources().getString(R.string.NoInformation));
+
+                bottomInformationSheetController.UpdateImageAdapter(bottomSheetInformation);
+
+                if (flagShowInfo)
+                    behavior.setState(BottomSheetBehaviorGoogleMapsLike.STATE_COLLAPSED);
+
+            }
+            catch (IOException e)
+            {
+                e.printStackTrace();
+            }
+                ;
         } else {
             Log.d("MAP:", "Poi Clicked!");
             behavior.setState(BottomSheetBehaviorGoogleMapsLike.STATE_HIDDEN);
@@ -1059,6 +1123,8 @@ public class MainActivity extends BaseActivity {
     {
         if(result.size() > 0)
             mapsFragment.SetSearchMarker(result);
+
+
     }
 
     public void DirectionRemovePlace(MarkerTagObject markerTagObject) {
@@ -1231,8 +1297,17 @@ public class MainActivity extends BaseActivity {
         searchFragment.HideView();
         favoritesFragment.HideView();
 
-        SetActionBarState(ActionBarState.Normal);
-        actionBar.hide();
+        if(mIsOnDirectionMode)
+        {
+            SetActionBarState(ActionBarState.DirectionMode);
+            actionBar.show();
+        }
+        else
+        {
+            SetActionBarState(ActionBarState.Normal);
+            actionBar.hide();
+        }
+
 
         floatingActionMenu.showMenu(true);
 
@@ -1273,7 +1348,7 @@ public class MainActivity extends BaseActivity {
                 }
                 else
                 {
-                    if(markerTagObject.getPlaceID().compareTo("") != 0)
+                    if(markerTagObject.getPlaceID().compareTo("") != 0 && markerTagObject.getPlaceID().compareTo("MyLocation") != 0)
                     {
                         final Task<PlacePhotoMetadataResponse> photoMetadataResponse = mGeoDataClient.getPlacePhotos(markerTagObject.getPlaceID());
 
@@ -1443,11 +1518,20 @@ public class MainActivity extends BaseActivity {
         return searchFragment;
     }
 
+    public FavoritesFragment getFavoritesFragment()
+    {
+        return favoritesFragment;
+    }
+
     public SelectPlaceMenuFragment getSelectPlaceMenuFragment()
     {
         return this.selectPlaceMenuFragment;
     }
 
+    public MapsFragment getMapsFragment()
+    {
+        return mapsFragment;
+    }
 
 }
 

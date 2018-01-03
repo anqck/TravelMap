@@ -167,7 +167,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
                 if(!RemoveMenuFlag)
                 {
                     myLocationMarker = mGoogleMap.addMarker(new MarkerOptions().position(new LatLng(location.getLatitude(), location.getLongitude())).title("My Location").icon(BitmapDescriptorFactory.fromResource(R.drawable.map_marker)));
-                    myLocationMarker.setTag(new MarkerTagObject("MyLocation"));
+                    myLocationMarker.setTag(new MarkerTagObject("MyLocation",myLocationMarker.getPosition()));
                 }
 
 
@@ -267,7 +267,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
         currentSelectedMarker = mGoogleMap.addMarker(new MarkerOptions().position(latLng).title("Marker in Selected").icon(BitmapDescriptorFactory.fromResource(R.drawable.map_marker)));
 
 
-        ((MainActivity) getActivity()).OnMapLongClickedCallback();
+        ((MainActivity) getActivity()).OnMapLongClickedCallback(latLng);
     }
 
     @Override
@@ -780,6 +780,10 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
 //            }
 
         }
+    }
+
+    public LatLng GetCurrentCameraPos() {
+        return mGoogleMap.getCameraPosition().target;
     }
 }
 

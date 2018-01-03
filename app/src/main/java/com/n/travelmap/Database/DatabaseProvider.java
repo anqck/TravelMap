@@ -37,7 +37,7 @@ public class DatabaseProvider {
         myDatabase = context.openOrCreateDatabase("MyApp1", MODE_PRIVATE, null);
 
         myDatabase.execSQL("CREATE TABLE IF NOT EXISTS SEARCHHISTORY(SearchID INTEGER  PRIMARY KEY   AUTOINCREMENT, PlaceName TEXT,Address TEXT, PlaceID TEXT, Latitude DOUBLE, Longitude DOUBLE,Types TEXT,Img BLOB);");
-        myDatabase.execSQL("CREATE TABLE IF NOT EXISTS FAVORITES(Lat DOUBLE   , Long DOUBLE , PlaceID TEXT, Img BLOB, PlaceName TEXT,Address TEXT,  PRIMARY KEY ( Lat, Long));");
+        myDatabase.execSQL("CREATE TABLE IF NOT EXISTS FAVORITES(Lat TEXT   , Long TEXT , PlaceID TEXT, Img BLOB, PlaceName TEXT,Address TEXT,  PRIMARY KEY ( Lat, Long));");
    /* Create a Table in the Database. */
 
     }

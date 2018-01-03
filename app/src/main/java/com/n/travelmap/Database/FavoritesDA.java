@@ -39,8 +39,8 @@ public class FavoritesDA {
 
         SQLiteStatement insertStmt      =    DatabaseProvider.GetInstance().GetSQLiteDatabase().compileStatement(sql);
         insertStmt.clearBindings();
-        insertStmt.bindDouble(1,place.getLatLng().latitude);
-        insertStmt.bindDouble(2,place.getLatLng().longitude);
+        insertStmt.bindString(1,String.valueOf(place.getLatLng().latitude));
+        insertStmt.bindString(2,String.valueOf(place.getLatLng().longitude));
         insertStmt.bindString(3, place.getPlaceID());
         if(place.getBitmap() != null)
             insertStmt.bindBlob(4, place.getBytesImg());
@@ -60,7 +60,7 @@ public class FavoritesDA {
         //databaseProvider.ExecuseNonQuery("INSERT INTO SEARCHHISTORY(PlaceName,Address, PlaceID,Latitude,Longitude, Types) VALUES ('"+place.getName()+"','"+place.getAddress() +"','"+place.getPlaceID()+ "'," + place.getLocation().latitude+"," + place.getLocation().longitude + ",'" +place.getTypes() +"');");
     }
 
-    public List<FavoritesDTO> GetFavorites()
+    public static List<FavoritesDTO> GetFavorites()
     {
         List<FavoritesDTO> res = new ArrayList<>();
 
@@ -73,8 +73,8 @@ public class FavoritesDA {
             {
                 // Loop through all Results
                 do {
-                    Double lat = c.getDouble(c.getColumnIndex("Lat"));
-                    Double Long = c.getDouble(c.getColumnIndex("Long"));
+                    Double lat = Double.parseDouble(c.getString(c.getColumnIndex("Lat")));
+                    Double Long = Double.parseDouble(c.getString(c.getColumnIndex("Long")));
                     String PlaceID = c.getString(c.getColumnIndex("PlaceID"));
 
                     byte[] blob = c.getBlob(c.getColumnIndex("Img"));
@@ -125,16 +125,26 @@ public class FavoritesDA {
         if(DatabaseProvider.GetInstance() == null)
             return false;
 
-        Cursor cursor = null;
-        String checkQuery = "SELECT * FROM FAVORITES WHERE Lat ='" +model.getLatLng().latitude+"' AND Long = '"+ model.getLatLng().longitude +"'";
-        cursor= DatabaseProvider.GetInstance().GetSQLiteDatabase().rawQuery(checkQuery,null);
-        boolean exists = (cursor.getCount() > 0);
-        cursor.close();
-        return exists;
+//        Cursor cursor = null;
+//        String checkQuery = "SELECT * FROM FAVORITES WHERE Lat ='" +model.getLatLng().latitude+"' AND Long = '"+ model.getLatLng().longitude +"';";
+//        cursor= DatabaseProvider.GetInstance().GetSQLiteDatabase().rawQuery(checkQuery,null);
+//        boolean exists = (cursor.getCount() > 0);
+//        cursor.close();
+//        return exists;
+
+        for(FavoritesDTO place :GetFavorites())
+        {
+            if(place.getLatLng().toString().compareTo(model.getLatLng().toString()) == 0)
+            {
+                return true;
+            }
+
+        }
+        return false;
     }
 
     public void DeleteFavorites(FavoritesDTO model) {
-        String checkQuery = "DELETE FROM FAVORITES WHERE Lat ='" +model.getLatLng().latitude+"' AND Long = '"+ model.getLatLng().longitude +"'";
+        String checkQuery = "DELETE FROM FAVORITES WHERE Lat  ='" +model.getLatLng().latitude+"' AND Long = '"+ model.getLatLng().longitude +"'";
         DatabaseProvider.GetInstance().ExecuseNonQuery(checkQuery);
     }
 }
