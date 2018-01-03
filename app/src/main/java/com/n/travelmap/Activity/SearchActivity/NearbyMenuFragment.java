@@ -7,9 +7,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import com.n.travelmap.Library.PlaceAPI.PlaceAPI;
+import com.n.travelmap.MainActivity;
 import com.n.travelmap.R;
 
 import java.util.ArrayList;
@@ -79,7 +79,7 @@ public class NearbyMenuFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
-                ((SearchActivity)getActivity()).OnNearbyMenuItemClick(ParserFilter(listObject.get(position).getStr()));
+                ((MainActivity)getActivity()).getSearchFragment().OnNearbyMenuItemClick(ParserFilter(listObject.get(position).getStr()));
             }
         });
 

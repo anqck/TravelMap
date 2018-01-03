@@ -19,6 +19,9 @@ public class SearchMainMenuFragment extends Fragment {
     ViewPager viewPager;
     TabLayout tabLayout;
     ViewPagerAdapter adapter;
+
+    SearchHistoryFragment searchHistoryFragment;
+
     public SearchMainMenuFragment() {
         // Required empty public constructor
     }
@@ -48,7 +51,9 @@ public class SearchMainMenuFragment extends Fragment {
 
     private void setupViewPager(ViewPager viewPager) {
         adapter = new ViewPagerAdapter(getActivity().getSupportFragmentManager());
-        adapter.addFrag(new SearchHistoryFragment(), "LỊCH SỬ");
+
+        searchHistoryFragment = new SearchHistoryFragment();
+        adapter.addFrag(searchHistoryFragment, "LỊCH SỬ");
         adapter.addFrag(new NearbyMenuFragment(), "KHÁC");
 
 //        adapter.addFrag(new FourFragment(), "FOUR");
@@ -68,5 +73,10 @@ public class SearchMainMenuFragment extends Fragment {
 
         adapter.notifyDataSetChanged();
        // adapter.notifyAll();
+    }
+
+    public  void UpdateHistoryList()
+    {
+        searchHistoryFragment.UpdateHistoryList();
     }
 }

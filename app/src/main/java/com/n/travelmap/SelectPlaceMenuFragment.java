@@ -86,7 +86,7 @@ public class SelectPlaceMenuFragment extends Fragment {
         btnMoveTo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((MainActivity)getActivity()).OnSetPlaceMoveTo(markerTagObject);
+                OnMoveToButton();
 
                 };
 
@@ -315,4 +315,8 @@ public class SelectPlaceMenuFragment extends Fragment {
         });
     }
 
+    public void OnMoveToButton()
+    {
+        ((MainActivity)getActivity()).OnSetPlaceMoveTo(markerTagObject);
+    }
 }

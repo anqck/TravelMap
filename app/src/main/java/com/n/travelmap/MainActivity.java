@@ -1,26 +1,18 @@
 package com.n.travelmap;
 
-import android.Manifest;
 import android.app.AlertDialog;
-import android.app.Fragment;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.location.Address;
 import android.location.Geocoder;
-import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
 import android.os.Build;
-import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.design.widget.AppBarLayout;
-import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.ActionBar;
@@ -29,6 +21,8 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 
 import com.directions.route.AbstractRouting;
@@ -46,14 +40,11 @@ import com.google.android.gms.location.places.PlacePhotoMetadataBuffer;
 import com.google.android.gms.location.places.PlacePhotoMetadataResponse;
 import com.google.android.gms.location.places.PlacePhotoResponse;
 import com.google.android.gms.location.places.Places;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PointOfInterest;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.n.travelmap.Activity.SearchActivity.SearchFragment;
 import com.n.travelmap.Library.BottomSheetInfomation.BottomInformationSheetController;
 import com.n.travelmap.Library.BottomSheetInfomation.BottomSheetBehaviorGoogleMapsLike;
 import com.n.travelmap.Library.BottomSheetInfomation.BottomSheetInformation;
@@ -66,7 +57,13 @@ import java.util.List;
 import java.util.Locale;
 
 public class MainActivity extends BaseActivity {
+
+    //Actionbar
+    ActionBarState actionBarState;
     ActionBar actionBar;
+    LinearLayout actionBar_search,actionBar_showonmap,actionBar_direction;
+    private EditText searchText;
+    private Button btnShowOnMap;
 
     //MapFragment
     MapsFragment mapsFragment;
@@ -104,6 +101,9 @@ public class MainActivity extends BaseActivity {
     LinearLayout dynamicContent;
 
 
+    //SearchFragment
+    private SearchFragment searchFragment;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -115,6 +115,8 @@ public class MainActivity extends BaseActivity {
         View wizard = getLayoutInflater().inflate(R.layout.activity_main, null);
         dynamicContent.addView(wizard);
 
+
+        searchFragment = (SearchFragment) getSupportFragmentManager().findFragmentById(R.id.search_activity_a);
 
         flagShowInfo = false;
         mIsOnDirectionMode = false;
@@ -130,26 +132,42 @@ public class MainActivity extends BaseActivity {
         // Construct a PlaceDetectionClient.
         mPlaceDetectionClient = Places.getPlaceDetectionClient(this, null);
 
+
+        //Actionnar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-
         setSupportActionBar(toolbar);
-
         actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
             actionBar.setTitle(" ");
         }
-
         actionBar.hide();
+        actionBar_search = findViewById(R.id.search_toolbar);
+        actionBar_direction = findViewById(R.id.actionbar_direction);
+        actionBar_showonmap = findViewById(R.id.show_on_map_layout);
+        searchText = findViewById(R.id.search_text);
+        searchText.addTextChangedListener(searchFragment.getT());
+        btnShowOnMap = findViewById(R.id.btn_show_on_map);
+        btnShowOnMap.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                searchFragment.OnShowOnMapButtonClick();
+            }
+        });
 
 
         CoordinatorLayout coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinatorlayout);
-
-
         bottomSheet = coordinatorLayout.findViewById(R.id.bottom_sheet);
 
 
         floatingActionButton = (FloatingActionButton) findViewById(R.id.fabDirection);
+        floatingActionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ((SelectPlaceMenuFragment)floatingActionButton.getTag()).OnMoveToButton();
+            }
+        });
+
         floatingActionButton.hide();
 
         behavior = BottomSheetBehaviorGoogleMapsLike.from(bottomSheet);
@@ -230,6 +248,7 @@ public class MainActivity extends BaseActivity {
         bottomInformationSheetController = new BottomInformationSheetController(bottomSheet, viewPager);
 
         selectPlaceMenuFragment = (SelectPlaceMenuFragment) getSupportFragmentManager().findFragmentById(R.id.select_place_menu);
+        floatingActionButton.setTag(selectPlaceMenuFragment);
         //bottomMenuFragment = (direction_menu_fragment) getSupportFragmentManager().findFragmentById(R.id.bottom_menu);
         mapsFragment = (MapsFragment) getFragmentManager().findFragmentById(R.id.map_fragment);
 
@@ -279,6 +298,13 @@ public class MainActivity extends BaseActivity {
             }
         });
 
+        com.github.clans.fab.FloatingActionButton fabClearMap = findViewById(R.id.fabClearMap);
+        fabClearMap.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mapsFragment.ClearAllMarker();
+            }
+        });
 
     }
 
@@ -536,6 +562,8 @@ public class MainActivity extends BaseActivity {
         selectPlaceMenuFragment.HideMenu();
         bottomSheet.fullScroll(View.FOCUS_UP);
         behavior.setState(BottomSheetBehaviorGoogleMapsLike.STATE_HIDDEN);
+
+        SetActionBarState(ActionBarState.DirectionMode);
         actionBar.show();
 
         mapsFragment.SetMoveFromMarker(placeId);
@@ -575,6 +603,8 @@ public class MainActivity extends BaseActivity {
         selectPlaceMenuFragment.HideMenu();
         bottomSheet.fullScroll(View.FOCUS_UP);
         behavior.setState(BottomSheetBehaviorGoogleMapsLike.STATE_HIDDEN);
+
+        SetActionBarState(ActionBarState.DirectionMode);
         actionBar.show();
 
         mapsFragment.SetMoveToMarker(placeId);
@@ -709,24 +739,39 @@ public class MainActivity extends BaseActivity {
         if (menuItem.getItemId() == android.R.id.home) {
             Log.d("MAIN", "BACK PRESSED");
 
-            haveResult = false;
-            mIsOnDirectionMode = false;
-            actionBar.hide();
-            mapsFragment.OnBackPressedCallback();
+            switch (actionBarState)
+            {
+                case DirectionMode:
+                    haveResult = false;
+                    mIsOnDirectionMode = false;
+                    actionBar.hide();
+                    SetActionBarState(ActionBarState.Normal);
+                    mapsFragment.OnBackPressedCallback();
 
-            bottomBar.setVisibility(View.VISIBLE);
+                    bottomBar.setVisibility(View.VISIBLE);
 
-            selectPlaceMenuFragment.HideMenu();
-            behavior.setState(BottomSheetBehaviorGoogleMapsLike.STATE_HIDDEN);
+                    selectPlaceMenuFragment.HideMenu();
+                    behavior.setState(BottomSheetBehaviorGoogleMapsLike.STATE_HIDDEN);
 
-            mMoveFromPos = null;
-            mMoveToPos = null;
+                    mMoveFromPos = null;
+                    mMoveToPos = null;
 
-            mapsFragment.ClearAllDirection();
-            mapsFragment.ClearMoveToMarker();
-            mapsFragment.ClearMoveFromMarker();
+                    mapsFragment.ClearAllDirection();
+                    mapsFragment.ClearMoveToMarker();
+                    mapsFragment.ClearMoveFromMarker();
 
-            directionMenu.HideMenu();
+                    directionMenu.HideMenu();
+                    break;
+                case SearchMode_SearchToolbar:
+                    getBottomBar().selectTabAtPosition(0,true);
+                    OnMainTabClick();
+                case SearchMode_ShowOnMap:
+                    searchFragment.switchToA();
+
+            }
+
+
+
         }
         return super.onOptionsItemSelected(menuItem);
     }
@@ -737,11 +782,14 @@ public class MainActivity extends BaseActivity {
             haveResult = false;
             mIsOnDirectionMode = false;
             actionBar.hide();
+            SetActionBarState(ActionBarState.Normal);
+
             mapsFragment.OnBackPressedCallback();
 
             bottomBar.setVisibility(View.VISIBLE);
 
             selectPlaceMenuFragment.HideMenu();
+
             behavior.setState(BottomSheetBehaviorGoogleMapsLike.STATE_HIDDEN);
 
             mMoveFromPos = null;
@@ -756,7 +804,12 @@ public class MainActivity extends BaseActivity {
             super.onBackPressed();
     }
 
+
+
     public void OnMarkerClickCallback(MarkerTagObject markerTagObject) {
+        if(markerTagObject == null)
+            return;
+
         if (markerTagObject.getPlaceID().compareTo("") == 0) {
             flagShowInfo = true;
 
@@ -899,27 +952,38 @@ public class MainActivity extends BaseActivity {
                             PlacePhotoMetadataBuffer photoMetadataBuffer = photos.getPhotoMetadata();
                             bottomSheetInformation.setPlacePhotoMetadataBuffer(photoMetadataBuffer);
 
-                            for (int i = 0; i < bottomSheetInformation.getPlacePhotoMetadataBuffer().getCount(); i++) {
-                                if (i >= 4)
-                                    break;
+                            if(bottomSheetInformation.getPlacePhotoMetadataBuffer().getCount() == 0)
+                            {
+                                Bitmap icon = BitmapFactory.decodeResource(getResources(),   R.drawable.no_image);
+                                bottomSheetInformation.getListImage().add(icon);
+                                bottomInformationSheetController.UpdateImageAdapter(bottomSheetInformation);
 
-                                final PlacePhotoMetadata photoMetadata = bottomSheetInformation.getPlacePhotoMetadataBuffer().get(i);
-                                Task<PlacePhotoResponse> photoResponse = mGeoDataClient.getScaledPhoto(photoMetadata, 640, 480);
-
-                                photoResponse.addOnCompleteListener(new OnCompleteListener<PlacePhotoResponse>() {
-                                    @Override
-                                    public void onComplete(@NonNull Task<PlacePhotoResponse> task) {
-                                        PlacePhotoResponse photo = task.getResult();
-                                        //Bitmap bitmap = photo.getBitmap();
-
-                                        //bottomInformationSheetController.SetImage(photo.getBitmap());
-
-                                        bottomSheetInformation.getListImage().add(photo.getBitmap());
-                                        bottomInformationSheetController.UpdateImageAdapter(bottomSheetInformation);
-
-                                    }
-                                });
                             }
+                            else
+                            {
+                                for (int i = 0; i < bottomSheetInformation.getPlacePhotoMetadataBuffer().getCount(); i++) {
+                                    if (i >= 4)
+                                        break;
+
+                                    final PlacePhotoMetadata photoMetadata = bottomSheetInformation.getPlacePhotoMetadataBuffer().get(i);
+                                    Task<PlacePhotoResponse> photoResponse = mGeoDataClient.getScaledPhoto(photoMetadata, 640, 480);
+
+                                    photoResponse.addOnCompleteListener(new OnCompleteListener<PlacePhotoResponse>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<PlacePhotoResponse> task) {
+                                            PlacePhotoResponse photo = task.getResult();
+                                            //Bitmap bitmap = photo.getBitmap();
+
+                                            //bottomInformationSheetController.SetImage(photo.getBitmap());
+
+                                            bottomSheetInformation.getListImage().add(photo.getBitmap());
+                                            bottomInformationSheetController.UpdateImageAdapter(bottomSheetInformation);
+
+                                        }
+                                    });
+                                }
+                            }
+
                         }
 
                     });
@@ -930,28 +994,37 @@ public class MainActivity extends BaseActivity {
         }
     }
 
+
+
     @Override
     public void onResume() {
         super.onResume();
         // bottomBar.selectTabAtPosition(1,false);
-        bottomBar.selectTabAtPosition(0, true);
+        //bottomBar.selectTabAtPosition(0, true);
 
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
         if (requestCode == REQ_CODE_CHILD) {
 
-            Bundle bundle = data.getExtras();
-            if (bundle != null)
-            {
-                List<MarkerTagObject> myObject = (List<MarkerTagObject>) bundle.getSerializable("LIST PLACES");
-                mapsFragment.SetSearchMarker(myObject);
-            }
+//            Bundle bundle = data.getExtras();
+//            if (bundle != null)
+//            {
+//                List<MarkerTagObject> myObject = (List<MarkerTagObject>) bundle.getSerializable("LIST PLACES");
+//                mapsFragment.SetSearchMarker(myObject);
+//            }
 
             //int c = 0;
         }
+    }
+
+    public void OnSearchResultReturn(List<MarkerTagObject> result)
+    {
+        if(result.size() > 0)
+            mapsFragment.SetSearchMarker(result);
     }
 
     public void DirectionRemovePlace(MarkerTagObject markerTagObject) {
@@ -977,7 +1050,9 @@ public class MainActivity extends BaseActivity {
                             } else {
                                 haveResult = false;
                                 mIsOnDirectionMode = false;
+
                                 actionBar.hide();
+                                SetActionBarState(ActionBarState.Normal);
                                 mapsFragment.OnBackPressedCallback();
 
 
@@ -1008,6 +1083,7 @@ public class MainActivity extends BaseActivity {
                             haveResult = false;
                             mIsOnDirectionMode = false;
                             actionBar.hide();
+                            SetActionBarState(ActionBarState.Normal);
                             mapsFragment.OnBackPressedCallback();
 
 
@@ -1093,6 +1169,87 @@ public class MainActivity extends BaseActivity {
         }
     }
 
+
+    //BottomMenu
+    @Override
+    public void OnSearchTabClick()
+    {
+        searchFragment.ShowView();
+
+        if(searchFragment.getmCurrentFragmentOnScreen().compareTo("NEARBY_RESULT") == 0)
+        {
+            SetActionBarState(ActionBarState.SearchMode_ShowOnMap);
+        }
+        else
+            SetActionBarState(ActionBarState.SearchMode_SearchToolbar);
+
+        actionBar.show();
+
+        searchText.clearFocus();
+
+        floatingActionMenu.hideMenu(false);
+    }
+
+    @Override
+    public void OnMainTabClick()
+    {
+        searchFragment.HideView();
+
+        SetActionBarState(ActionBarState.Normal);
+        actionBar.hide();
+
+        floatingActionMenu.showMenu(true);
+    }
+
+
+
+    //ActionBar
+    public enum ActionBarState
+    {
+        Normal,
+        DirectionMode,
+        SearchMode_SearchToolbar,
+        SearchMode_ShowOnMap
+    }
+
+
+    public void SetActionBarState(ActionBarState state)
+    {
+        actionBarState = state;
+        switch ( state)
+        {
+            case Normal:
+                actionBar_showonmap.setVisibility(View.INVISIBLE);
+                actionBar_direction.setVisibility(View.INVISIBLE);
+                actionBar_search.setVisibility(View.INVISIBLE);
+                break;
+            case DirectionMode:
+                actionBar_showonmap.setVisibility(View.INVISIBLE);
+                actionBar_direction.setVisibility(View.VISIBLE);
+                actionBar_search.setVisibility(View.INVISIBLE);
+                break;
+            case SearchMode_ShowOnMap:
+                actionBar_showonmap.setVisibility(View.VISIBLE);
+                actionBar_direction.setVisibility(View.INVISIBLE);
+                actionBar_search.setVisibility(View.INVISIBLE);
+                break;
+            case SearchMode_SearchToolbar:
+                actionBar_showonmap.setVisibility(View.INVISIBLE);
+                actionBar_direction.setVisibility(View.INVISIBLE);
+                actionBar_search.setVisibility(View.VISIBLE);
+                break;
+        }
+    }
+
+    public EditText getSearchText()
+    {
+        return  searchText;
+    }
+
+    public SearchFragment getSearchFragment()
+    {
+        return searchFragment;
+    }
 }
 
 

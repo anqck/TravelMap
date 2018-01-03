@@ -23,74 +23,141 @@
             android:layout_marginTop="24dp"
             android:fitsSystemWindows="false">
 
-            <com.github.jorgecastilloprz.FABProgressCircle
-                android:id="@+id/fabProgressCircle"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                app:circleSize="mini"
-                app:reusable="true"
-                android:layout_marginRight="10dp"
-                >
-            <android.support.design.widget.FloatingActionButton
-                android:id="@+id/btn_mode_car"
-                android:layout_width="@dimen/fab_size_mini"
-                android:layout_height="@dimen/fab_size_mini"
-                android:scaleType="center"
-                android:src="@drawable/ic_car"
-                android:clickable="true"
-                app:backgroundTint="@color/colorPrimaryDark"
-                android:tint="@color/colorWhite"
-                android:background="?selectableItemBackgroundBorderless"
-                app:rippleColor="@color/colorAppGreen"
-                />
-            </com.github.jorgecastilloprz.FABProgressCircle>
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+                <LinearLayout
+                    android:id="@+id/search_toolbar"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:visibility="invisible"
+                    android:layout_marginRight="15dp">
+                    <EditText
+                        android:id="@+id/search_text"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:background="@drawable/text_view_border"
+                        android:drawableLeft="@drawable/ic_search"
+                        android:drawableTint="@color/colorPrimaryDark"
+                        android:drawablePadding="7dp"
+                        android:padding="7.5dp"
+                        android:textColor="@android:color/black"
+                        android:layout_weight="0.9"
 
-            <com.github.jorgecastilloprz.FABProgressCircle
-                android:id="@+id/fabProgressCircleWalk"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                app:circleSize="mini"
-                app:reusable="true"
-                android:layout_marginRight="10dp"
-                >
-            <android.support.design.widget.FloatingActionButton
-                android:id="@+id/btn_mode_walk"
-                android:layout_width="@dimen/fab_size_mini"
-                android:layout_height="@dimen/fab_size_mini"
-                android:src="@drawable/ic_walking"
+                        />
 
-                android:scaleType="center"
-                android:clickable="true"
-                android:tint="@color/colorWhite"
+                    <!--<Button-->
+                    <!--android:id="@+id/btn_filter"-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:layout_gravity="center_vertical"-->
+                    <!--android:layout_weight="0.9"-->
+                    <!--style="@style/Base.Widget.AppCompat.Button.Borderless.Colored"-->
+                    <!--android:drawableStart="@drawable/ic_3dot_vertical"-->
+                    <!--android:drawableTint="@color/colorPrimaryDark"/>-->
 
-                app:backgroundTint="@color/colorPrimaryDark"
-                android:background="?selectableItemBackgroundBorderless"
-                app:rippleColor="@color/colorAppGreen"
-                />
-            </com.github.jorgecastilloprz.FABProgressCircle>
+                </LinearLayout>
+
+                <LinearLayout
+
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:id="@+id/show_on_map_layout"
+                    android:visibility="invisible"
+                    android:layout_alignParentRight="true"
+                    >
+                    <Button
+                        android:layout_marginVertical="5dp"
+                        style="@style/Base.Widget.AppCompat.Button.Colored"
+
+                        android:id="@+id/btn_show_on_map"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_marginRight="10dp"
+                        android:text="Hiển thị trên bản đồ"
+                        android:gravity="center_vertical"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/actionbar_direction"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:visibility="invisible">
+                    <com.github.jorgecastilloprz.FABProgressCircle
+                        android:id="@+id/fabProgressCircle"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        app:circleSize="mini"
+                        app:reusable="true"
+                        android:layout_marginRight="10dp"
+                        >
+                        <android.support.design.widget.FloatingActionButton
+                            android:id="@+id/btn_mode_car"
+                            android:layout_width="@dimen/fab_size_mini"
+                            android:layout_height="@dimen/fab_size_mini"
+                            android:scaleType="center"
+                            android:src="@drawable/ic_car"
+                            android:clickable="true"
+                            app:backgroundTint="@color/colorPrimaryDark"
+                            android:tint="@color/colorWhite"
+                            android:background="?selectableItemBackgroundBorderless"
+                            app:rippleColor="@color/colorAppGreen"
+                            />
+                    </com.github.jorgecastilloprz.FABProgressCircle>
+
+                    <com.github.jorgecastilloprz.FABProgressCircle
+                        android:id="@+id/fabProgressCircleWalk"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        app:circleSize="mini"
+                        app:reusable="true"
+                        android:layout_marginRight="10dp"
+                        >
+                        <android.support.design.widget.FloatingActionButton
+                            android:id="@+id/btn_mode_walk"
+                            android:layout_width="@dimen/fab_size_mini"
+                            android:layout_height="@dimen/fab_size_mini"
+                            android:src="@drawable/ic_walking"
+
+                            android:scaleType="center"
+                            android:clickable="true"
+                            android:tint="@color/colorWhite"
+
+                            app:backgroundTint="@color/colorPrimaryDark"
+                            android:background="?selectableItemBackgroundBorderless"
+                            app:rippleColor="@color/colorAppGreen"
+                            />
+                    </com.github.jorgecastilloprz.FABProgressCircle>
 
 
-            <com.github.jorgecastilloprz.FABProgressCircle
-                android:id="@+id/fabProgressCircleBiking"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                app:circleSize="mini"
-                app:reusable="true"
-                android:layout_marginRight="10dp"
-                >
-            <android.support.design.widget.FloatingActionButton
-                android:id="@+id/btn_mode_biking"
-                android:layout_width="@dimen/fab_size_mini"
-                android:layout_height="@dimen/fab_size_mini"
-                android:src="@drawable/ic_bicycle"
-                android:scaleType="center"
-                android:clickable="true"
-                android:tint="@color/colorWhite"
-                app:backgroundTint="@color/colorPrimaryDark"
-                android:background="?selectableItemBackgroundBorderless"
-                app:rippleColor="@color/colorAppGreen"
-                />
-            </com.github.jorgecastilloprz.FABProgressCircle>
+                    <com.github.jorgecastilloprz.FABProgressCircle
+                        android:id="@+id/fabProgressCircleBiking"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        app:circleSize="mini"
+                        app:reusable="true"
+                        android:layout_marginRight="10dp"
+                        >
+                        <android.support.design.widget.FloatingActionButton
+                            android:id="@+id/btn_mode_biking"
+                            android:layout_width="@dimen/fab_size_mini"
+                            android:layout_height="@dimen/fab_size_mini"
+                            android:src="@drawable/ic_bicycle"
+                            android:scaleType="center"
+                            android:clickable="true"
+                            android:tint="@color/colorWhite"
+                            app:backgroundTint="@color/colorPrimaryDark"
+                            android:background="?selectableItemBackgroundBorderless"
+                            app:rippleColor="@color/colorAppGreen"
+                            />
+                    </com.github.jorgecastilloprz.FABProgressCircle>
+                </LinearLayout>
+
+            </RelativeLayout>
+
+
+
         </android.support.v7.widget.Toolbar>
 
 
@@ -250,5 +317,10 @@
         />
 
 
-
+    <fragment
+        android:name="com.n.travelmap.Activity.SearchActivity.SearchFragment"
+        android:id="@+id/search_activity_a"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        />
 </RelativeLayout>

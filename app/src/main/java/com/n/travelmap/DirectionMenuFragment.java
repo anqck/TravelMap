@@ -61,6 +61,12 @@ public class DirectionMenuFragment extends Fragment {
         textViewTime =  view.findViewById(R.id.text_time);
 
         btnAddPlace =  view.findViewById(R.id.btn_add_place);
+        btnAddPlace.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ((MainActivity)getActivity()).SwitchToSearchActivity();
+            }
+        });
         return view ;
     }
 
@@ -147,5 +153,6 @@ public class DirectionMenuFragment extends Fragment {
             }
         });
     }
+
 
 }

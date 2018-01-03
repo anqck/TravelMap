@@ -7,7 +7,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import com.n.travelmap.Library.PlaceAPI.PlaceAPI;
 import com.n.travelmap.R;
@@ -66,7 +65,7 @@ public class SearchAutoCompleteFragment extends Fragment {
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                ((SearchActivity) getActivity()).onSearchItemClick(resultList.get(position));
+                ((SearchFragment) getParentFragment()).onSearchItemClick(resultList.get(position));
             }
         });
 

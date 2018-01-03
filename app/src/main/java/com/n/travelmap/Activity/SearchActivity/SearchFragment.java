@@ -1,13 +1,18 @@
 package com.n.travelmap.Activity.SearchActivity;
 
 import android.app.Activity;
+
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Rect;
+import android.inputmethodservice.Keyboard;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.annotation.NonNull;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
@@ -16,9 +21,12 @@ import android.support.v7.widget.ScrollingTabContainerView;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -43,6 +51,7 @@ import com.n.travelmap.Library.PlaceAPI.Place;
 import com.n.travelmap.Library.PlaceAPI.PlacesException;
 import com.n.travelmap.Library.PlaceAPI.PlacesListener;
 import com.n.travelmap.Library.PlaceAPI.SearchType;
+import com.n.travelmap.MainActivity;
 import com.n.travelmap.MarkerTagObject;
 import com.n.travelmap.R;
 
@@ -55,11 +64,14 @@ import java.util.List;
  * Created by Khanh An on 01/02/18.
  */
 
-public class SearchActivity extends BaseActivity {
+public class SearchFragment extends Fragment {
     String TAG = "TAG";
 
-    EditText editText;
-    String mCurrentFragmentOnScreen ;
+    View view;
+
+    private TextWatcher t;
+
+    private String mCurrentFragmentOnScreen ;
     SearchMainMenuFragment fragA;
     SearchAutoCompleteFragment fragB;
     NearbyResultFragment fragC;
@@ -75,16 +87,14 @@ public class SearchActivity extends BaseActivity {
      GeoDataClient mGeoDataClient;
 
      Task<PlacePhotoMetadataResponse> photoMetadataResponse ;
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        //setContentView(R.layout.activity_search);
 
-        //dynamically include the  current activity      layout into  baseActivity layout.now all the view of baseactivity is   accessible in current activity.
-        dynamicContent = (LinearLayout)  findViewById(R.id.dynamicContent);
-        //BottomNavigationView bottomBar = (BottomNavigationView) findViewById(R.id.navigation);
-        View wizard = getLayoutInflater().inflate(R.layout.activity_search, null);
-        dynamicContent.addView(wizard);
+    ProgressDialog waitDialog;
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState)  {
+        view = inflater.inflate(R.layout.activity_search, container, false);
+
+        HideView();
 
         //NOTE
         if (android.os.Build.VERSION.SDK_INT > 9) {
@@ -92,21 +102,20 @@ public class SearchActivity extends BaseActivity {
             StrictMode.setThreadPolicy(policy);
         }
 
-        bottomBar.selectTabAtPosition(1,true);
-
-        Toolbar toolbar = (Toolbar) findViewById(R.id.my_toolbar);
-        setSupportActionBar(toolbar);
-
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+//        bottomBar.selectTabAtPosition(1,true);
+//        Toolbar toolbar = (Toolbar) findViewById(R.id.my_toolbar);
+//        setSupportActionBar(toolbar);
+//
+//        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         mCurrentFragmentOnScreen = "MAIN_MENU";
 
 
-        searchToolbar = findViewById(R.id.search_toolbar);
-        showOnMap  = findViewById(R.id.show_on_map_layout);
-        showOnMap.setVisibility(View.INVISIBLE);
+        //searchToolbar = view.findViewById(R.id.search_toolbar);
+        //showOnMap  = view.findViewById(R.id.show_on_map_layout);
+        //showOnMap.setVisibility(View.INVISIBLE);
 
-        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        FragmentTransaction fragmentTransaction = getChildFragmentManager().beginTransaction();
         fragA = new SearchMainMenuFragment();
         fragB =  new SearchAutoCompleteFragment();
         fragC =  new NearbyResultFragment();
@@ -117,17 +126,10 @@ public class SearchActivity extends BaseActivity {
         fragmentTransaction.commit();
 
 
-        editText = (EditText) findViewById(R.id.search_text);
-        editText.clearFocus();
-//        ((LinearLayout) findViewById(R.id.contain)).setOnTouchListener(new View.OnTouchListener() {
-//            @Override
-//            public boolean onTouch(View v, MotionEvent event) {
-//                editText.clearFocus();
-//                hideKeyboard(v);
-//                return true;
-//            }
-//        });
-        editText.addTextChangedListener(new TextWatcher() {
+        //editText = (EditText) getActivity().findViewById(R.id.search_text);
+        //editText.clearFocus();
+
+         t = new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
                 if(after == 0 && mCurrentFragmentOnScreen.compareTo("SEARCH_AUTOCOMPLETE") == 0)
@@ -150,7 +152,7 @@ public class SearchActivity extends BaseActivity {
                 if(s.toString().length() != 0)
                     fragB.UpdateOnTextChange(s.toString(),null);
             }
-        });
+         };
 
 //        currentFilter = 0;
 //       items = new CharSequence[] {"Tất cả", "Ẩm thực", "Khách sạn", "Mua sắm","Xe buýt", "Cafe","Gym", "ATM", "Sân bay", "Bệnh viện", "Rạp phim","Công viên","Spa","Sở thú","Sòng bạc"};
@@ -160,7 +162,7 @@ public class SearchActivity extends BaseActivity {
 //        btnFilter.setOnClickListener(new View.OnClickListener() {
 //            @Override
 //            public void onClick(View v) {
-//                final AlertDialog.Builder adb = new AlertDialog.Builder(SearchActivity.this);
+//                final AlertDialog.Builder adb = new AlertDialog.Builder(SearchFragment.this);
 //
 //                adb.setSingleChoiceItems(items, currentFilter, new DialogInterface.OnClickListener() {
 //
@@ -216,26 +218,26 @@ public class SearchActivity extends BaseActivity {
 //        });
 
         //Get Img
-        mGeoDataClient=   Places.getGeoDataClient(this, null);
+        mGeoDataClient=   Places.getGeoDataClient(getActivity(), null);
 
-
+        return view;
     }
-    @Override
-    public boolean dispatchTouchEvent(MotionEvent event) {
-        if (event.getAction() == MotionEvent.ACTION_DOWN) {
-            View v = getCurrentFocus();
-            if ( v instanceof EditText) {
-                Rect outRect = new Rect();
-                v.getGlobalVisibleRect(outRect);
-                if (!outRect.contains((int)event.getRawX(), (int)event.getRawY())) {
-                    v.clearFocus();
-                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                    imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
-                }
-            }
-        }
-        return super.dispatchTouchEvent( event );
-    }
+//    @Override
+//    public boolean dispatchTouchEvent(MotionEvent event) {
+//        if (event.getAction() == MotionEvent.ACTION_DOWN) {
+//            View v = getCurrentFocus();
+//            if ( v instanceof EditText) {
+//                Rect outRect = new Rect();
+//                v.getGlobalVisibleRect(outRect);
+//                if (!outRect.contains((int)event.getRawX(), (int)event.getRawY())) {
+//                    v.clearFocus();
+//                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+//                    imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+//                }
+//            }
+//        }
+//        return super.dispatchTouchEvent( event );
+//    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem menuItem) {
@@ -252,44 +254,39 @@ public class SearchActivity extends BaseActivity {
             }
             else
             {
-                editText.setText("");
+                ((MainActivity)getActivity()).getSearchText().setText("");
                 //switchToA();
             }
         }
         return super.onOptionsItemSelected(menuItem);
     }
 
-    @Override
-    public void onBackPressed() {
-        if(mCurrentFragmentOnScreen.compareTo("MAIN_MENU") == 0)
-        {
-
-        }
-        else if(mCurrentFragmentOnScreen.compareTo("NEARBY_RESULT") == 0)
-        {
-            searchToolbar.setVisibility(View.VISIBLE);
-            showOnMap.setVisibility(View.INVISIBLE);
-            switchToA();
-
-        }
-        else
-        {
-            editText.setText("");
-            //switchToA();
-        }
-    }
-
-    private void switchToA() {
-
-//        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-//        fragmentTransaction.detach(getSupportFragmentManager().findFragmentByTag("SEARCH_AUTOCOMPLETE"));
-//        fragmentTransaction.attach(fragA);
-//        fragmentTransaction.addToBackStack("MENU_TAG");
+//    @Override
+//    public void onBackPressed() {
+//        if(mCurrentFragmentOnScreen.compareTo("MAIN_MENU") == 0)
+//        {
 //
-//        fragmentTransaction.commit();
-//        getSupportFragmentManager().executePendingTransactions();
+//        }
+//        else if(mCurrentFragmentOnScreen.compareTo("NEARBY_RESULT") == 0)
+//        {
+//            searchToolbar.setVisibility(View.VISIBLE);
+//            showOnMap.setVisibility(View.INVISIBLE);
+//            switchToA();
+//
+//        }
+//        else
+//        {
+//            editText.setText("");
+//            //switchToA();
+//        }
+//    }
 
-        FragmentManager fragmentManager = getSupportFragmentManager();
+    public  void switchToA() {
+
+        ((MainActivity)getActivity()).SetActionBarState(MainActivity.ActionBarState.SearchMode_SearchToolbar);
+
+
+        FragmentManager fragmentManager = getChildFragmentManager();
 
         if(fragmentManager.findFragmentByTag("MAIN_MENU") != null)
         {
@@ -320,7 +317,7 @@ public class SearchActivity extends BaseActivity {
 
     private void switchToB() {
 
-        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentManager fragmentManager = getChildFragmentManager();
 
         if(fragmentManager.findFragmentByTag("SEARCH_AUTOCOMPLETE") != null) {
             //if the fragment exists, show it.
@@ -357,16 +354,17 @@ public class SearchActivity extends BaseActivity {
 
     private void switchToC() {
 
-        runOnUiThread(new Runnable() {
+        getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                searchToolbar.setVisibility(View.INVISIBLE);
-                showOnMap.setVisibility(View.VISIBLE);
+
+
+                ((MainActivity)getActivity()).SetActionBarState(MainActivity.ActionBarState.SearchMode_ShowOnMap);
             }
         });
 
 
-        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentManager fragmentManager = getChildFragmentManager();
 
         if(fragmentManager.findFragmentByTag("NEARBY_RESULT") != null) {
             //if the fragment exists, show it.
@@ -390,7 +388,12 @@ public class SearchActivity extends BaseActivity {
     }
 
     public void onSearchItemClick(final SearchPlaceObject searchPlaceObject) {
-        editText.setText("");
+        ((MainActivity)getActivity()).getSearchText();
+
+
+        SearchFragment.hideSoftKeyboard(getActivity());
+        waitDialog = ProgressDialog.show(getActivity(), "",
+                "Đang lấy thông tin...", true);;
 
         photoMetadataResponse = mGeoDataClient.getPlacePhotos(searchPlaceObject.getPlaceID());
 
@@ -422,25 +425,35 @@ public class SearchActivity extends BaseActivity {
                                     PlacePhotoResponse photo = task.getResult();
                                     //Bitmap bitmap = photo.getBitmap();
 
-                                    SearchHistoryDA searchHistoryDA = new SearchHistoryDA(SearchActivity.this);
+                                    SearchHistoryDA searchHistoryDA = new SearchHistoryDA(getActivity());
                                     searchHistoryDA.AddSearchHistory(new SavedPlace(searchPlaceObject,myPlace.getLatLng(),photo.getBitmap()));
 
                                     List< MarkerTagObject> result = new ArrayList<>();
                                     result.add(new MarkerTagObject(searchPlaceObject.getPlaceID(),myPlace.getLatLng()));
 
+                                    waitDialog.cancel();
                                     ReturnResult(result);
+                                    ReturnToSearchMenu();
+                                    fragA.UpdateHistoryList();
+
+
                                 }
                             });
                         }
                         else
                         {
-                            SearchHistoryDA searchHistoryDA = new SearchHistoryDA(SearchActivity.this);
+                            SearchHistoryDA searchHistoryDA = new SearchHistoryDA(getActivity());
                             searchHistoryDA.AddSearchHistory(new SavedPlace(searchPlaceObject,myPlace.getLatLng(),null));
 
                             List< MarkerTagObject> result = new ArrayList<>();
                             result.add(new MarkerTagObject(searchPlaceObject.getPlaceID(),myPlace.getLatLng()));
 
+                            waitDialog.cancel();
                             ReturnResult(result);
+                            ReturnToSearchMenu();
+                            fragA.UpdateHistoryList();
+
+
                         }
 
 
@@ -452,6 +465,10 @@ public class SearchActivity extends BaseActivity {
 
 
 
+    }
+
+    private void ReturnToSearchMenu() {
+        ((MainActivity)getActivity()).getSearchText().setText("");
     }
 
     AlertDialog.Builder builder;
@@ -466,7 +483,7 @@ public class SearchActivity extends BaseActivity {
 
                         if(e.getMessage().compareTo("ZERO_RESULTS") == 0)
                         {
-                            SearchActivity.this.runOnUiThread(new Runnable() {
+                            getActivity().runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
 
@@ -478,7 +495,7 @@ public class SearchActivity extends BaseActivity {
                                     else
                                     {
                                         dialogShown = true;
-                                        builder = new AlertDialog.Builder(SearchActivity.this);
+                                        builder = new AlertDialog.Builder(getActivity());
                                         builder.setTitle("Lỗi")
                                                 .setMessage("Không có kết quả")
                                                 .setNegativeButton("OK", new DialogInterface.OnClickListener() {
@@ -523,19 +540,25 @@ public class SearchActivity extends BaseActivity {
                 .execute();
     }
 
-    public void ReturnResult(List<MarkerTagObject> result) {
-        Intent resultIntent = new Intent(this,SearchActivity.class);
+    public void ReturnResult(List<MarkerTagObject> result)
+    {
 
-        //resultIntent.putExtra("LIST PLACES", "AAAA");
-       resultIntent.putExtra("LIST PLACES", (Serializable) result);
-
-        setResult(Activity.RESULT_OK, resultIntent);
-        finish();
+        ((MainActivity)getActivity()).OnSearchResultReturn(result);
+        ((MainActivity)getActivity()).OnMainTabClick();
+        ((MainActivity)getActivity()).getBottomBar().selectTabAtPosition(0);
+//        Intent resultIntent = new Intent(getActivity(),MainActivity.class);
+//
+//        //resultIntent.putExtra("LIST PLACES", "AAAA");
+//       resultIntent.putExtra("LIST PLACES", (Serializable) result);
+//
+//        setResult(Activity.RESULT_OK, resultIntent);
+//        finish();
     }
 
     public void OnNearbyResultItemClick(final Place place) {
 
-
+        waitDialog = ProgressDialog.show(getActivity(), "",
+                "Đang lấy thông tin...", true);;
         photoMetadataResponse = mGeoDataClient.getPlacePhotos(place.getPlaceId());
 
         mGeoDataClient.getPlaceById(place.getPlaceId()).addOnCompleteListener(new OnCompleteListener<PlaceBufferResponse>() {
@@ -566,25 +589,34 @@ public class SearchActivity extends BaseActivity {
                                     PlacePhotoResponse photo = task.getResult();
                                     //Bitmap bitmap = photo.getBitmap();
 
-                                    SearchHistoryDA searchHistoryDA = new SearchHistoryDA(SearchActivity.this);
+                                    SearchHistoryDA searchHistoryDA = new SearchHistoryDA(getActivity());
                                     searchHistoryDA.AddSearchHistory(new SavedPlace(new SearchPlaceObject(myPlace.getName().toString(),myPlace.getAddress().toString(), place.GetTypesTrans(),place.getPlaceId()),myPlace.getLatLng(),photo.getBitmap()));
 
                                     List< MarkerTagObject> result = new ArrayList<>();
                                     result.add(new MarkerTagObject(place.getPlaceId(),myPlace.getLatLng()));
 
+                                    waitDialog.cancel();
+
                                     ReturnResult(result);
+                                    switchToA();
+                                    //ReturnToSearchMenu();
+                                    fragA.UpdateHistoryList();
                                 }
                             });
                         }
                         else
                         {
-                            SearchHistoryDA searchHistoryDA = new SearchHistoryDA(SearchActivity.this);
+                            SearchHistoryDA searchHistoryDA = new SearchHistoryDA(getActivity());
                             searchHistoryDA.AddSearchHistory(new SavedPlace(new SearchPlaceObject(myPlace.getName().toString(),myPlace.getAddress().toString(), place.GetTypesTrans(),place.getPlaceId()),myPlace.getLatLng(),null));
 
                             List< MarkerTagObject> result = new ArrayList<>();
                             result.add(new MarkerTagObject(place.getPlaceId(),myPlace.getLatLng()));
 
+                            waitDialog.cancel();
                             ReturnResult(result);
+                            switchToA();
+                            //ReturnToSearchMenu();
+                            fragA.UpdateHistoryList();
                         }
 
 
@@ -595,5 +627,40 @@ public class SearchActivity extends BaseActivity {
         });
 
 
+    }
+
+    public void HideView()
+    {
+        view.setVisibility(View.INVISIBLE);
+    }
+
+    public void ShowView()
+    {
+        view.setVisibility(View.VISIBLE);
+    }
+
+    public TextWatcher getT() {
+        return t;
+    }
+
+    public void setT(TextWatcher t) {
+        this.t = t;
+    }
+
+    public static void hideSoftKeyboard(Activity activity) {
+        InputMethodManager inputMethodManager =
+                (InputMethodManager) activity.getSystemService(
+                        Activity.INPUT_METHOD_SERVICE);
+        inputMethodManager.hideSoftInputFromWindow(
+                activity.getCurrentFocus().getWindowToken(), 0);
+    }
+
+   public String getmCurrentFragmentOnScreen()
+   {
+       return mCurrentFragmentOnScreen;
+   }
+    public void OnShowOnMapButtonClick()
+    {
+        ReturnResult(fragC.GetResult());
     }
 }

@@ -24,19 +24,21 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.n.travelmap.Database.SavedPlace;
 import com.n.travelmap.Database.SearchHistoryDA;
+import com.n.travelmap.MainActivity;
 import com.n.travelmap.MarkerTagObject;
 import com.n.travelmap.R;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class SearchHistoryFragment extends Fragment{
     View view;
     ListView list;
 
-
-
+    SearchHistoryDA searchHistoryDA;
+    List<SavedPlace> placeList;
     public SearchHistoryFragment() {
         // Required empty public constructor
     }
@@ -57,15 +59,14 @@ public class SearchHistoryFragment extends Fragment{
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.search_history_fragment, container, false);
 
-        SearchHistoryDA searchHistoryDA = new SearchHistoryDA(view.getContext());
+         searchHistoryDA = new SearchHistoryDA(view.getContext());
 
-        final List<SavedPlace> placeList = searchHistoryDA.GetSearchHistory();
-
-        SearchHistoryListviewAdapter adapter = new    SearchHistoryListviewAdapter(this.getActivity(),placeList);
 
 
         list    =   (ListView)view.findViewById(R.id.list);
-        list.setAdapter(adapter);
+
+        UpdateHistoryList();
+
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
             @Override
@@ -78,7 +79,7 @@ public class SearchHistoryFragment extends Fragment{
                 List< MarkerTagObject> result = new ArrayList<>();
                 result.add(new MarkerTagObject(placeList.get(position).getPlaceID(),placeList.get(position).getLocation()));
 
-                ((SearchActivity)getActivity()).ReturnResult(result);
+                ((MainActivity)getActivity()).getSearchFragment().ReturnResult(result);
 
 
 
@@ -87,6 +88,17 @@ public class SearchHistoryFragment extends Fragment{
 
 
         return view ;
+    }
+
+    public void UpdateHistoryList()
+    {
+        placeList = searchHistoryDA.GetSearchHistory();
+
+
+        Collections.reverse(placeList);
+
+        SearchHistoryListviewAdapter adapter = new    SearchHistoryListviewAdapter(this.getActivity(), placeList );
+        list.setAdapter(adapter);
     }
 
 }

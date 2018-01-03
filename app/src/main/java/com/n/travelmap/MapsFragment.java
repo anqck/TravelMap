@@ -633,5 +633,14 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
             mGoogleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
         }
     }
+
+    public void ClearAllMarker() {
+        for(Marker m : searchMarker)
+        {
+            m.remove();
+        }
+
+        searchMarker.clear();
+    }
 }
 
