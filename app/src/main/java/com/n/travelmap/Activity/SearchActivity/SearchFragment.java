@@ -3,34 +3,22 @@ package com.n.travelmap.Activity.SearchActivity;
 import android.app.Activity;
 
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
-import android.graphics.Rect;
-import android.inputmethodservice.Keyboard;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.ScrollingTabContainerView;
-import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.AdapterView;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.LinearLayout;
 
 import com.google.android.gms.location.places.GeoDataClient;
@@ -40,11 +28,9 @@ import com.google.android.gms.location.places.PlacePhotoMetadataBuffer;
 import com.google.android.gms.location.places.PlacePhotoMetadataResponse;
 import com.google.android.gms.location.places.PlacePhotoResponse;
 import com.google.android.gms.location.places.Places;
-import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import  com.n.travelmap.BaseActivity;
-import com.n.travelmap.Database.SavedPlace;
+import com.n.travelmap.Database.SearchHistoryDTO;
 import com.n.travelmap.Database.SearchHistoryDA;
 import com.n.travelmap.Library.PlaceAPI.NRPlaces;
 import com.n.travelmap.Library.PlaceAPI.Place;
@@ -55,7 +41,6 @@ import com.n.travelmap.MainActivity;
 import com.n.travelmap.MarkerTagObject;
 import com.n.travelmap.R;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -426,7 +411,7 @@ public class SearchFragment extends Fragment {
                                     //Bitmap bitmap = photo.getBitmap();
 
                                     SearchHistoryDA searchHistoryDA = new SearchHistoryDA(getActivity());
-                                    searchHistoryDA.AddSearchHistory(new SavedPlace(searchPlaceObject,myPlace.getLatLng(),photo.getBitmap()));
+                                    searchHistoryDA.AddSearchHistory(new SearchHistoryDTO(searchPlaceObject,myPlace.getLatLng(),photo.getBitmap()));
 
                                     List< MarkerTagObject> result = new ArrayList<>();
                                     result.add(new MarkerTagObject(searchPlaceObject.getPlaceID(),myPlace.getLatLng()));
@@ -443,7 +428,7 @@ public class SearchFragment extends Fragment {
                         else
                         {
                             SearchHistoryDA searchHistoryDA = new SearchHistoryDA(getActivity());
-                            searchHistoryDA.AddSearchHistory(new SavedPlace(searchPlaceObject,myPlace.getLatLng(),null));
+                            searchHistoryDA.AddSearchHistory(new SearchHistoryDTO(searchPlaceObject,myPlace.getLatLng(),null));
 
                             List< MarkerTagObject> result = new ArrayList<>();
                             result.add(new MarkerTagObject(searchPlaceObject.getPlaceID(),myPlace.getLatLng()));
@@ -590,7 +575,7 @@ public class SearchFragment extends Fragment {
                                     //Bitmap bitmap = photo.getBitmap();
 
                                     SearchHistoryDA searchHistoryDA = new SearchHistoryDA(getActivity());
-                                    searchHistoryDA.AddSearchHistory(new SavedPlace(new SearchPlaceObject(myPlace.getName().toString(),myPlace.getAddress().toString(), place.GetTypesTrans(),place.getPlaceId()),myPlace.getLatLng(),photo.getBitmap()));
+                                    searchHistoryDA.AddSearchHistory(new SearchHistoryDTO(new SearchPlaceObject(myPlace.getName().toString(),myPlace.getAddress().toString(), place.GetTypesTrans(),place.getPlaceId()),myPlace.getLatLng(),photo.getBitmap()));
 
                                     List< MarkerTagObject> result = new ArrayList<>();
                                     result.add(new MarkerTagObject(place.getPlaceId(),myPlace.getLatLng()));
@@ -607,7 +592,7 @@ public class SearchFragment extends Fragment {
                         else
                         {
                             SearchHistoryDA searchHistoryDA = new SearchHistoryDA(getActivity());
-                            searchHistoryDA.AddSearchHistory(new SavedPlace(new SearchPlaceObject(myPlace.getName().toString(),myPlace.getAddress().toString(), place.GetTypesTrans(),place.getPlaceId()),myPlace.getLatLng(),null));
+                            searchHistoryDA.AddSearchHistory(new SearchHistoryDTO(new SearchPlaceObject(myPlace.getName().toString(),myPlace.getAddress().toString(), place.GetTypesTrans(),place.getPlaceId()),myPlace.getLatLng(),null));
 
                             List< MarkerTagObject> result = new ArrayList<>();
                             result.add(new MarkerTagObject(place.getPlaceId(),myPlace.getLatLng()));

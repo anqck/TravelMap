@@ -13,7 +13,7 @@ import java.io.ByteArrayOutputStream;
  * Created by Khanh An on 12/19/17.
  */
 
-public class SavedPlace {
+public class SearchHistoryDTO {
     private String Name;
     private String Address;
     private String PlaceID;
@@ -23,12 +23,12 @@ public class SavedPlace {
 
     private Bitmap bitmap;
 
-    SavedPlace()
+    SearchHistoryDTO()
     {
 
     }
 
-    public SavedPlace(SearchPlaceObject obj, LatLng location, Bitmap bitmap)
+    public SearchHistoryDTO(SearchPlaceObject obj, LatLng location, Bitmap bitmap)
     {
         this.Name = obj.getName();
         this.Address = obj.getSubTitle();
@@ -41,14 +41,14 @@ public class SavedPlace {
         this.bitmap = bitmap;
     }
 
-    SavedPlace(String name, String placeid)
+    SearchHistoryDTO(String name, String placeid)
     {
         this.Name = name;
         this.PlaceID = placeid;
         this.Location = new LatLng(0,0);
     }
 
-    SavedPlace(String name, String placeid,LatLng location)
+    SearchHistoryDTO(String name, String placeid, LatLng location)
     {
         this.Name = name;
         this.PlaceID = placeid;
@@ -56,7 +56,7 @@ public class SavedPlace {
     }
 
 
-    SavedPlace(String name, String placeid,LatLng location,String address,String types,  byte[]  bytesImg)
+    SearchHistoryDTO(String name, String placeid, LatLng location, String address, String types, byte[]  bytesImg)
     {
         this.Name = name;
         this.PlaceID = placeid;

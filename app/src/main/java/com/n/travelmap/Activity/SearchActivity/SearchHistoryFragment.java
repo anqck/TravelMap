@@ -4,31 +4,20 @@ package com.n.travelmap.Activity.SearchActivity;
  * Created by Khanh An on 12/20/17.
  */
 
-import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.Toast;
 
-import com.google.android.gms.location.places.GeoDataClient;
-import com.google.android.gms.location.places.PlaceBufferResponse;
-import com.google.android.gms.location.places.Places;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.n.travelmap.Database.SavedPlace;
+import com.n.travelmap.Database.SearchHistoryDTO;
 import com.n.travelmap.Database.SearchHistoryDA;
 import com.n.travelmap.MainActivity;
 import com.n.travelmap.MarkerTagObject;
 import com.n.travelmap.R;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -38,7 +27,7 @@ public class SearchHistoryFragment extends Fragment{
     ListView list;
 
     SearchHistoryDA searchHistoryDA;
-    List<SavedPlace> placeList;
+    List<SearchHistoryDTO> placeList;
     public SearchHistoryFragment() {
         // Required empty public constructor
     }

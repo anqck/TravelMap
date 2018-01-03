@@ -82,8 +82,8 @@
                 android:layout_height="60dp"
                 android:src="@drawable/ic_add_favorite_scaled"
                 android:layout_centerHorizontal="true"
-
-                android:background="?attr/selectableItemBackgroundBorderless"/>
+                android:background="?attr/selectableItemBackgroundBorderless"
+                />
 
             <TextView
                 android:id="@+id/button1text"

@@ -43,6 +43,8 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PointOfInterest;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.n.travelmap.Database.FavoritesDA;
+import com.n.travelmap.Database.FavoritesDTO;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -83,11 +85,15 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
     //SearchMarker
     List<Marker> searchMarker;
 
+    //FavoriteMarker
+    List<Marker> favoriteMarker;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         searchMarker = new ArrayList<>();
+        favoriteMarker = new ArrayList<>();
     }
 
     @Override
@@ -220,6 +226,8 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
         mGoogleMap.getUiSettings().setMapToolbarEnabled(false);
         mGoogleMap.getUiSettings().setMyLocationButtonEnabled(true);
 
+        UpdateFavoriteList();
+
         //mGoogleMap.addMarker(new MarkerOptions().position(uit).title("Marker in UIT").icon(BitmapDescriptorFactory.fromResource(R.drawable.map_marker)));
         final CameraPosition cameraPosition = new CameraPosition.Builder()
                 .target(uit)
@@ -311,7 +319,26 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
             }
             else
             {
-                moveFromMarker = mGoogleMap.addMarker(new MarkerOptions().position(currentSelectedMarker.getPosition()).title("Move From").icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_move_from)));
+//                if(markerObject.getTag().toString().compareTo("Favourite") == 0)
+//                {
+//                    for(int i = 0;i < favoriteMarker.size(); i++)
+//                    {
+//                        markerObject.setTag("");
+//                        if(markerObject.getLatLng().toString().compareTo(favoriteMarker.get(i).getPosition().toString()) == 0)
+//                        {
+//                            moveFromMarker = mGoogleMap.addMarker(new MarkerOptions().position(new LatLng(markerObject.getLatLng().latitude,markerObject.getLatLng().longitude)).title("Move From").icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_move_from)));
+//
+//                            favoriteMarker.get(i).remove();
+//
+//                            favoriteMarker.get(i).setTag(new MarkerTagObject(markerObject.getPlaceID(),markerObject.getLatLng(),"Favourite"));
+//                            break;
+//                        }
+//                    }
+//                }
+                if(markerObject.getTag().toString().compareTo("Favourite") == 0)
+                    moveFromMarker = mGoogleMap.addMarker(new MarkerOptions().position(new LatLng(markerObject.getLatLng().latitude,markerObject.getLatLng().longitude)).title("Move From").icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_move_from)));
+                else
+                    moveFromMarker = mGoogleMap.addMarker(new MarkerOptions().position(currentSelectedMarker.getPosition()).title("Move From").icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_move_from)));
 
                 if (currentSelectedMarker != null)
                     currentSelectedMarker.remove();
@@ -321,7 +348,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
 
         markerObject.setLatLng(moveFromMarker.getPosition());
         moveFromMarker.setTag(markerObject);
-
+        moveFromMarker.setZIndex(999);
 
 
 
@@ -358,7 +385,26 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
             }
             else
             {
-                moveToMarker = mGoogleMap.addMarker(new MarkerOptions().position(currentSelectedMarker.getPosition()).title("Move To").icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_move_to)));
+//                if(markerObject.getTag().toString().compareTo("Favourite") == 0)
+//                {
+//                    for(int i = 0;i < favoriteMarker.size(); i++)
+//                    {
+//                        markerObject.setTag("");
+//                        if(markerObject.getLatLng().toString().compareTo(favoriteMarker.get(i).getPosition().toString()) == 0)
+//                        {
+//                            moveToMarker = mGoogleMap.addMarker(new MarkerOptions().position(new LatLng(markerObject.getLatLng().latitude,markerObject.getLatLng().longitude)).title("Move To").icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_move_to)));
+//
+//                            favoriteMarker.get(i).remove();
+//
+//                            favoriteMarker.get(i).setTag(new MarkerTagObject(markerObject.getPlaceID(),markerObject.getLatLng(),"Favourite"));
+//                            break;
+//                        }
+//                    }
+//                }
+                if(markerObject.getTag().toString().compareTo("Favourite") == 0)
+                    moveToMarker = mGoogleMap.addMarker(new MarkerOptions().position(new LatLng(markerObject.getLatLng().latitude,markerObject.getLatLng().longitude)).title("Move To").icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_move_to)));
+                else
+                    moveToMarker = mGoogleMap.addMarker(new MarkerOptions().position(currentSelectedMarker.getPosition()).title("Move To").icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_move_to)));
 
                 if (currentSelectedMarker != null)
                     currentSelectedMarker.remove();
@@ -370,7 +416,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
 
         markerObject.setLatLng(moveToMarker.getPosition());
         moveToMarker.setTag(markerObject);
-
+        moveToMarker.setZIndex(999);
 
     }
 
@@ -440,6 +486,19 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
                     }
                 }
 
+//                for(int i = 0;i < favoriteMarker.size(); i++)
+//                {
+//                    if(moveFromMarker.getPosition().toString().compareTo(favoriteMarker.get(i).getPosition().toString()) == 0)
+//                    {
+//                        Marker temp = mGoogleMap.addMarker(new MarkerOptions().position(favoriteMarker.get(i).getPosition()).title("Favourite").icon(BitmapDescriptorFactory.fromResource(R.drawable.star)));
+//                        temp.setTag(new MarkerTagObject(((MarkerTagObject)favoriteMarker.get(i).getTag()).getPlaceID(),((MarkerTagObject)favoriteMarker.get(i).getTag()).getLatLng(), "Favourite"));
+//
+//                        favoriteMarker.remove(i);
+//                        favoriteMarker.add(temp);
+//
+//                        break;
+//                    }
+//                }
             }
 
 
@@ -475,6 +534,20 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
                         break;
                     }
                 }
+
+//                for(int i = 0;i < favoriteMarker.size(); i++)
+//                {
+//                    if(moveFromMarker.getPosition().toString().compareTo(favoriteMarker.get(i).getPosition().toString()) == 0)
+//                    {
+//                        Marker temp = mGoogleMap.addMarker(new MarkerOptions().position(favoriteMarker.get(i).getPosition()).title("Favourite").icon(BitmapDescriptorFactory.fromResource(R.drawable.star)));
+//                        temp.setTag(new MarkerTagObject(((MarkerTagObject)favoriteMarker.get(i).getTag()).getPlaceID(),((MarkerTagObject)favoriteMarker.get(i).getTag()).getLatLng(), "Favourite"));
+//
+//                        favoriteMarker.remove(i);
+//                        favoriteMarker.add(temp);
+//
+//                        break;
+//                    }
+//                }
             }
 
             moveToMarker.remove();
@@ -617,7 +690,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
         {
             Marker temp = mGoogleMap.addMarker(new MarkerOptions().position(markerTagObject.getLatLng()).title("Searched").icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_blue)));
             temp.setTag(new MarkerTagObject(markerTagObject.getPlaceID(),markerTagObject.getLatLng(), "SearchResult"));
-
+            temp.setZIndex(998);
             searchMarker.add(temp);
         }
 
@@ -641,6 +714,72 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
         }
 
         searchMarker.clear();
+    }
+
+    public void UpdateFavoriteList()
+    {
+        for(Marker m : favoriteMarker)
+        {
+            m.remove();
+        }
+
+        favoriteMarker.clear();
+
+
+        FavoritesDA favoritesDA = new FavoritesDA(getActivity());
+        List<FavoritesDTO> favoritesDTOList = favoritesDA.GetFavorites();
+
+        for(FavoritesDTO favoritesDTO : favoritesDTOList)
+        {
+            Marker temp = mGoogleMap.addMarker(new MarkerOptions().position(favoritesDTO.getLatLng()).title("Favorite").icon(BitmapDescriptorFactory.fromResource(R.drawable.star)));
+            temp.setTag(new MarkerTagObject(favoritesDTO.getPlaceID(),favoritesDTO.getLatLng(), "Favourite"));
+            favoriteMarker.add(temp);
+
+
+
+//            if (moveFromMarker != null) {
+//                if (((MarkerTagObject) moveFromMarker.getTag()) != null) {
+//                        if(((MarkerTagObject) moveFromMarker.getTag()).getLatLng().toString().compareTo(temp.getPosition().toString()) == 0)
+//                        {
+//                            //moveFromMarker = mGoogleMap.addMarker(new MarkerOptions().position(new LatLng(((MarkerTagObject) moveFromMarker.getTag()).getLatLng().latitude,((MarkerTagObject) moveFromMarker.getTag()).getLatLng().longitude)).title("Move From").icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_move_from)));
+//
+//                            temp.remove();
+//
+//                            temp.setTag(new MarkerTagObject(((MarkerTagObject) moveFromMarker.getTag()).getPlaceID(),((MarkerTagObject) moveFromMarker.getTag()).getLatLng(),"Favourite"));
+//                            break;
+//                        }
+//                    }
+//
+//
+//            }
+//
+//            if (moveToMarker != null) {
+//                if (((MarkerTagObject) moveToMarker.getTag()) != null) {
+//                    if(((MarkerTagObject) moveToMarker.getTag()).getLatLng().toString().compareTo(temp.getPosition().toString()) == 0)
+//                    {
+//                        //moveFromMarker = mGoogleMap.addMarker(new MarkerOptions().position(new LatLng(((MarkerTagObject) moveFromMarker.getTag()).getLatLng().latitude,((MarkerTagObject) moveFromMarker.getTag()).getLatLng().longitude)).title("Move From").icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_move_from)));
+//
+//                        temp.remove();
+//
+//                        temp.setTag(new MarkerTagObject(((MarkerTagObject) moveToMarker.getTag()).getPlaceID(),((MarkerTagObject) moveToMarker.getTag()).getLatLng(),"Favourite"));
+//                        break;
+//                    }
+//                }
+//            }
+//
+//            if (currentSelectedMarker != null) {
+//                if (((MarkerTagObject) currentSelectedMarker.getTag()) != null) {
+//                    if(((MarkerTagObject) currentSelectedMarker.getTag()).getLatLng().toString().compareTo(temp.getPosition().toString()) == 0)
+//                    {
+//                        //moveFromMarker = mGoogleMap.addMarker(new MarkerOptions().position(new LatLng(((MarkerTagObject) moveFromMarker.getTag()).getLatLng().latitude,((MarkerTagObject) moveFromMarker.getTag()).getLatLng().longitude)).title("Move From").icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_move_from)));
+//
+//                        currentSelectedMarker.remove();
+//                        break;
+//                    }
+//                }
+//            }
+
+        }
     }
 }
 

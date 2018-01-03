@@ -1,5 +1,6 @@
 package com.n.travelmap.Library.BottomSheetInfomation;
 
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -11,9 +12,14 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.google.android.gms.location.places.Place;
+import com.n.travelmap.Database.FavoritesDA;
+import com.n.travelmap.Database.FavoritesDTO;
 import com.n.travelmap.Library.BottomSheetInfomation.BottomSheetInformation;
 import com.n.travelmap.Library.BottomSheetInfomation.ItemPagerAdapter;
+import com.n.travelmap.MainActivity;
+import com.n.travelmap.MarkerTagObject;
 import com.n.travelmap.R;
+import com.n.travelmap.SelectPlaceMenuFragment;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -46,28 +52,31 @@ public class BottomInformationSheetController {
     private Button info_button2;
     private Button info_button3;
 
-
-    public BottomInformationSheetController(final View bottomSheet, ViewPager adapter)
+    MainActivity mainActivity;
+    public BottomInformationSheetController(final View bottomSheet, ViewPager adapter, Context context)
     {
         this.viewPager = adapter;
 
+        mainActivity = (MainActivity)context;
 
         bottomSheetTitle = (TextView) bottomSheet.findViewById(R.id.bottom_sheet_title);
         bottomSheetSubTitle = (TextView) bottomSheet.findViewById(R.id.text_dummy1);
 
         button1 = (ImageButton) bottomSheet.findViewById(R.id.button1);
-        button1.setOnTouchListener(new View.OnTouchListener() {
+        button1.setOnClickListener(new View.OnClickListener() {
             @Override
-            public boolean onTouch(View v, MotionEvent event) {
+            public void onClick(View v) {
+                mainActivity.OnFavoritesButtonClick(button1.getTag().toString(),mainActivity.getSelectPlaceMenuFragment().getMarkerTagObject());
 
-                return true;
             }
         });
-        button2 = (ImageButton) bottomSheet.findViewById(R.id.button2);
-        button2.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
 
+
+
+        button2 = (ImageButton) bottomSheet.findViewById(R.id.button2);
+        button2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
                 String query = null;
                 try {
                     query = URLEncoder.encode(bottomSheetTitle.getText().toString(), "utf-8");
@@ -78,25 +87,22 @@ public class BottomInformationSheetController {
                 } catch (UnsupportedEncodingException e) {
                     e.printStackTrace();
                 }
-
-                return true;
             }
         });
-        button3 = (ImageButton) bottomSheet.findViewById(R.id.button3);
-        button3.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
 
+        button3 = (ImageButton) bottomSheet.findViewById(R.id.button3);
+        button3.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
                 String shareBody = bottomSheetTitle.getText().toString().toUpperCase() + "\n Địa chỉ: " + bottomSheetSubTitle.getText().toString() + "\n SĐT: " + info_button2.getText().toString() ;
                 Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
                 sharingIntent.setType("text/plain");
                 sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "-- Travel Map - Share Location --");
                 sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, shareBody);
                 startActivity(bottomSheet.getContext(), sharingIntent, Bundle.EMPTY);
-
-                return true;
             }
         });
+
 
         button1text = (TextView) bottomSheet.findViewById(R.id.button1text);
         button2text = (TextView) bottomSheet.findViewById(R.id.button2text);
@@ -141,6 +147,8 @@ public class BottomInformationSheetController {
     public void SetBottomSheetTitle(String value)
     {
         bottomSheetTitle.setText(value);
+
+
     }
 
     public void SetBottomSheetSubTitle(String value)
@@ -151,7 +159,10 @@ public class BottomInformationSheetController {
     public void SetInfoText1(String value)
     {
         info_button1.setText(value);
+
+        UpdateFavoriteButton();
     }
+
 
     public void SetInfoText2(String value)
     {
@@ -164,4 +175,17 @@ public class BottomInformationSheetController {
     }
 
 
+    public void UpdateFavoriteButton()
+    {
+        if(FavoritesDA.ifExists(new FavoritesDTO(mainActivity.getSelectPlaceMenuFragment().getMarkerTagObject().getLatLng(),mainActivity.getSelectPlaceMenuFragment().getMarkerTagObject().getPlaceID())))
+        {
+            button1.setImageDrawable(mainActivity.getResources().getDrawable(R.drawable.ic_favourite_scaled));
+            button1.setTag("PLACE_SELECT_REMOVE");
+        }
+        else
+        {
+            button1.setImageDrawable(mainActivity.getResources().getDrawable(R.drawable.ic_add_favorite_scaled));
+            button1.setTag("PLACE_SELECT");
+        }
+    }
 }

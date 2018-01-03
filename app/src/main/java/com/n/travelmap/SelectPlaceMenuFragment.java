@@ -13,6 +13,8 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.n.travelmap.Database.FavoritesDA;
+import com.n.travelmap.Database.FavoritesDTO;
 
 import java.util.ArrayList;
 
@@ -41,9 +43,11 @@ public class SelectPlaceMenuFragment extends Fragment {
     private LatLng latLng;
 
     View view;
-    LinearLayout normalView, removeView,extendView;
-    Button btnMoveFrom,btnMoveTo,btnExtends,btnRemove;
+    LinearLayout normalView,normalView_remove, removeView,extendView;
+    Button btnMoveFrom,btnMoveTo,btnExtends,btnRemove,btnFavorites;
     BottomSheetBehavior behavior;
+
+    FavoritesDA favoritesDA;
 
     public SelectPlaceMenuFragment() {
         // Required empty public constructor
@@ -68,11 +72,12 @@ public class SelectPlaceMenuFragment extends Fragment {
         view.setVisibility(View.INVISIBLE);
         HideMenu();
 
+        favoritesDA = new FavoritesDA(getActivity());
 
         normalView = view.findViewById(R.id.menu_normal);
         removeView = view.findViewById(R.id.menu_remove);
         extendView = view.findViewById(R.id.menu_extends);
-
+        normalView_remove = view.findViewById(R.id.menu_normal_remove);
 
         btnMoveFrom = view.findViewById(R.id.btn_move_from);
         btnMoveFrom.setOnClickListener(new View.OnClickListener() {
@@ -82,21 +87,32 @@ public class SelectPlaceMenuFragment extends Fragment {
             }
         });
 
+        view.findViewById(R.id.btn_move_from_remove).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ((MainActivity)getActivity()).OnSetPlaceMoveFrom(markerTagObject);
+            }
+        });
+
+
         btnMoveTo = view.findViewById(R.id.btn_move_to);
         btnMoveTo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 OnMoveToButton();
-
                 };
 
         });
+        view.findViewById(R.id.btn_move_to_remove).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                OnMoveToButton();
+            }
+        });
+
+
 
         btnExtends = view.findViewById(R.id.btn_extend);
-
-
-
-
         btnExtends.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -127,6 +143,21 @@ public class SelectPlaceMenuFragment extends Fragment {
         });
 
 
+        btnFavorites = view.findViewById(R.id.btn_favorites);
+        btnFavorites.setTag("PLACE_SELECT");
+        btnFavorites.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ((MainActivity)getActivity()).OnFavoritesButtonClick(btnFavorites.getTag().toString(),markerTagObject);
+            }
+        });
+
+        view.findViewById(R.id.btn_favorites_remove).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ((MainActivity)getActivity()).OnFavoritesButtonClick("PLACE_SELECT_REMOVE".toString(),markerTagObject);
+            }
+        });
         return view ;
     }
 
@@ -269,15 +300,24 @@ public class SelectPlaceMenuFragment extends Fragment {
         if(state == SelectPlaceMenuState.Normal)
         {
 
+            if(favoritesDA.ifExists(new FavoritesDTO(PlaceID.getLatLng(),PlaceID.getPlaceID())))
+            {
+                normalView_remove.setVisibility(View.VISIBLE);
+                normalView.setVisibility(View.INVISIBLE);
+            }
+            else
+            {
+                normalView_remove.setVisibility(View.INVISIBLE);
+                normalView.setVisibility(View.VISIBLE);
+            }
 
-            normalView.setVisibility(View.VISIBLE);
             removeView.setVisibility(View.INVISIBLE);
             extendView.setVisibility(View.INVISIBLE);
         }
         else if(state == SelectPlaceMenuState.Remove)
         {
 
-
+            normalView_remove.setVisibility(View.INVISIBLE);
             normalView.setVisibility(View.INVISIBLE);
             removeView.setVisibility(View.VISIBLE);
             extendView.setVisibility(View.INVISIBLE);
@@ -285,7 +325,7 @@ public class SelectPlaceMenuFragment extends Fragment {
         else
         {
 
-
+            normalView_remove.setVisibility(View.INVISIBLE);
             normalView.setVisibility(View.INVISIBLE);
             removeView.setVisibility(View.INVISIBLE);
             extendView.setVisibility(View.VISIBLE);
@@ -318,5 +358,15 @@ public class SelectPlaceMenuFragment extends Fragment {
     public void OnMoveToButton()
     {
         ((MainActivity)getActivity()).OnSetPlaceMoveTo(markerTagObject);
+    }
+
+    public Button getBtnFavorites()
+    {
+        return btnFavorites;
+    }
+
+    public MarkerTagObject getMarkerTagObject()
+    {
+        return markerTagObject;
     }
 }

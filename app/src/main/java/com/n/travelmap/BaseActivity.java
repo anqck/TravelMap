@@ -102,7 +102,7 @@ public class BaseActivity extends AppCompatActivity {
                         return false;
 
                     case R.id.tab_favorites:
-
+                        OnFavoritesTabClick();
 //                        in =new Intent(getBaseContext(),TempActivity.class);
 //
 //
@@ -129,6 +129,8 @@ public class BaseActivity extends AppCompatActivity {
         //mainActivity.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
     }
 
+    protected void OnFavoritesTabClick() {
+    }
 
 
     protected void OnMainTabClick()

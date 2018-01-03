@@ -18,44 +18,40 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by Khanh An on 12/19/17.
+ * Created by Khanh An on 01/03/18.
  */
 
-public class SearchHistoryDA {
-
-
+public class FavoritesDA {
 
     DatabaseProvider databaseProvider;
     Context context;
 
-    public SearchHistoryDA(Context context)
+    public FavoritesDA(Context context)
     {
         databaseProvider = DatabaseProvider.GetInstance();
         this.context = context;
     }
 
-    public void AddSearchHistory(SearchHistoryDTO place)
+    public void AddFavorites(FavoritesDTO place)
     {
 
-        String sql                      =   "INSERT INTO SEARCHHISTORY(PlaceName,Address, PlaceID,Latitude,Longitude, Types, Img) VALUES(?,?,?,?,?,?,?)";
+        String sql                      =   "INSERT INTO FAVORITES(Lat,Long,PlaceID,Img,PlaceName,Address) VALUES(?,?,?,?,?,?)";
 
-        SQLiteStatement insertStmt      =    databaseProvider.GetSQLiteDatabase().compileStatement(sql);
+        SQLiteStatement insertStmt      =    DatabaseProvider.GetInstance().GetSQLiteDatabase().compileStatement(sql);
         insertStmt.clearBindings();
-        insertStmt.bindString(1,place.getName());
-        insertStmt.bindString(2,place.getAddress());
+        insertStmt.bindDouble(1,place.getLatLng().latitude);
+        insertStmt.bindDouble(2,place.getLatLng().longitude);
         insertStmt.bindString(3, place.getPlaceID());
-        insertStmt.bindDouble(4, place.getLocation().latitude);
-        insertStmt.bindDouble(5,place.getLocation().longitude);
-        insertStmt.bindString(6, place.getTypes());
-
         if(place.getBitmap() != null)
-            insertStmt.bindBlob(7, place.getBytesImg());
+            insertStmt.bindBlob(4, place.getBytesImg());
         else
         {
             Bitmap icon = BitmapFactory.decodeResource(context.getResources(),   R.drawable.no_image);
             //Bitmap bitmap = drawableToBitmap(context.getResources().getDrawable(R.drawable.no_image));
-            insertStmt.bindBlob(7, getBitmapAsByteArray(icon));
+            insertStmt.bindBlob(4, getBitmapAsByteArray(icon));
         }
+        insertStmt.bindString(5,place.getTitle());
+        insertStmt.bindString(6, place.getSubTitle());
 
         insertStmt.executeInsert();
 
@@ -64,11 +60,11 @@ public class SearchHistoryDA {
         //databaseProvider.ExecuseNonQuery("INSERT INTO SEARCHHISTORY(PlaceName,Address, PlaceID,Latitude,Longitude, Types) VALUES ('"+place.getName()+"','"+place.getAddress() +"','"+place.getPlaceID()+ "'," + place.getLocation().latitude+"," + place.getLocation().longitude + ",'" +place.getTypes() +"');");
     }
 
-    public List<SearchHistoryDTO> GetSearchHistory()
+    public List<FavoritesDTO> GetFavorites()
     {
-        List<SearchHistoryDTO> res = new ArrayList<>();
+        List<FavoritesDTO> res = new ArrayList<>();
 
-        Cursor c = databaseProvider.ExecuseQuery("SELECT * FROM SEARCHHISTORY");
+        Cursor c = DatabaseProvider.GetInstance().ExecuseQuery("SELECT * FROM FAVORITES");
 
         c.moveToFirst();
         if (c != null)
@@ -77,15 +73,15 @@ public class SearchHistoryDA {
             {
                 // Loop through all Results
                 do {
-                    String PlaceName = c.getString(c.getColumnIndex("PlaceName"));
+                    Double lat = c.getDouble(c.getColumnIndex("Lat"));
+                    Double Long = c.getDouble(c.getColumnIndex("Long"));
                     String PlaceID = c.getString(c.getColumnIndex("PlaceID"));
-                    String Address = c.getString(c.getColumnIndex("Address"));
-                    LatLng latLng = new LatLng( c.getDouble(c.getColumnIndex("Latitude")), c.getDouble(c.getColumnIndex("Longitude")));
 
-                    String Types = c.getString(c.getColumnIndex("Types"));
                     byte[] blob = c.getBlob(c.getColumnIndex("Img"));
+                    String PlaceName = c.getString(c.getColumnIndex("PlaceName"));
+                    String Address = c.getString(c.getColumnIndex("Address"));
 
-                    res.add(new SearchHistoryDTO(PlaceName,PlaceID,latLng,Address,Types,blob));
+                    res.add(new FavoritesDTO(new LatLng(lat,Long),PlaceID,blob,PlaceName,Address));
 
                 }
                 while(c.moveToNext());
@@ -124,5 +120,21 @@ public class SearchHistoryDA {
         return bitmap;
     }
 
+    public static boolean ifExists(FavoritesDTO model)
+    {
+        if(DatabaseProvider.GetInstance() == null)
+            return false;
 
+        Cursor cursor = null;
+        String checkQuery = "SELECT * FROM FAVORITES WHERE Lat ='" +model.getLatLng().latitude+"' AND Long = '"+ model.getLatLng().longitude +"'";
+        cursor= DatabaseProvider.GetInstance().GetSQLiteDatabase().rawQuery(checkQuery,null);
+        boolean exists = (cursor.getCount() > 0);
+        cursor.close();
+        return exists;
+    }
+
+    public void DeleteFavorites(FavoritesDTO model) {
+        String checkQuery = "DELETE FROM FAVORITES WHERE Lat ='" +model.getLatLng().latitude+"' AND Long = '"+ model.getLatLng().longitude +"'";
+        DatabaseProvider.GetInstance().ExecuseNonQuery(checkQuery);
+    }
 }

@@ -8,7 +8,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.n.travelmap.Database.SavedPlace;
+import com.n.travelmap.Database.SearchHistoryDTO;
 import com.n.travelmap.R;
 
 import java.util.List;
@@ -17,14 +17,14 @@ import java.util.List;
  * Created by Khanh An on 12/20/17.
  */
 
-public class SearchHistoryListviewAdapter extends ArrayAdapter<SavedPlace> {
+public class SearchHistoryListviewAdapter extends ArrayAdapter<SearchHistoryDTO> {
 
     private final Activity context;
 
-    private  List<SavedPlace> listHistory;
+    private  List<SearchHistoryDTO> listHistory;
 
 
-    public SearchHistoryListviewAdapter(Activity context, List<SavedPlace> savedPlaces) {
+    public SearchHistoryListviewAdapter(Activity context, List<SearchHistoryDTO> savedPlaces) {
         super(context, R.layout.place_listview_item, savedPlaces);
         this.context = context;
         listHistory = savedPlaces;

@@ -44,7 +44,13 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.PointOfInterest;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.n.travelmap.Activity.FavoritesActivity.FavoritesFragment;
 import com.n.travelmap.Activity.SearchActivity.SearchFragment;
+import com.n.travelmap.Database.DatabaseProvider;
+import com.n.travelmap.Database.FavoritesDA;
+import com.n.travelmap.Database.FavoritesDTO;
+import com.n.travelmap.Database.SearchHistoryDA;
+import com.n.travelmap.Database.SearchHistoryDTO;
 import com.n.travelmap.Library.BottomSheetInfomation.BottomInformationSheetController;
 import com.n.travelmap.Library.BottomSheetInfomation.BottomSheetBehaviorGoogleMapsLike;
 import com.n.travelmap.Library.BottomSheetInfomation.BottomSheetInformation;
@@ -104,6 +110,11 @@ public class MainActivity extends BaseActivity {
     //SearchFragment
     private SearchFragment searchFragment;
 
+    //FavoritesFragment
+    private FavoritesFragment favoritesFragment;
+
+    FavoritesDA favoritesDA;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -117,6 +128,7 @@ public class MainActivity extends BaseActivity {
 
 
         searchFragment = (SearchFragment) getSupportFragmentManager().findFragmentById(R.id.search_activity_a);
+        favoritesFragment = (FavoritesFragment)  getSupportFragmentManager().findFragmentById(R.id.favorites_activity);
 
         flagShowInfo = false;
         mIsOnDirectionMode = false;
@@ -245,7 +257,7 @@ public class MainActivity extends BaseActivity {
         ItemPagerAdapter adapter = new ItemPagerAdapter(this, img);
         viewPager = (ViewPager) findViewById(R.id.pager);
         viewPager.setAdapter(adapter);
-        bottomInformationSheetController = new BottomInformationSheetController(bottomSheet, viewPager);
+        bottomInformationSheetController = new BottomInformationSheetController(bottomSheet, viewPager,this);
 
         selectPlaceMenuFragment = (SelectPlaceMenuFragment) getSupportFragmentManager().findFragmentById(R.id.select_place_menu);
         floatingActionButton.setTag(selectPlaceMenuFragment);
@@ -306,6 +318,10 @@ public class MainActivity extends BaseActivity {
             }
         });
 
+
+        //Database
+        DatabaseProvider.Init(this);
+          favoritesDA = new FavoritesDA(this);
     }
 
     private View.OnClickListener TravelModeButtonOnClick() {
@@ -395,7 +411,9 @@ public class MainActivity extends BaseActivity {
         Log.d("MAP:", "Clicked!");
 
         selectPlaceMenuFragment.HideMenu();
+
         behavior.setState(BottomSheetBehaviorGoogleMapsLike.STATE_HIDDEN);
+
         bottomBar.setVisibility(View.VISIBLE);
 
         flagShowInfo = false;
@@ -469,9 +487,11 @@ public class MainActivity extends BaseActivity {
         flagShowInfo = true;
 
         Log.d("MAP:", "Poi Clicked!");
+
         behavior.setState(BottomSheetBehaviorGoogleMapsLike.STATE_HIDDEN);
         bottomBar.setVisibility(View.INVISIBLE);
         directionMenu.HideMenu();
+
         selectPlaceMenuFragment.ShowMenu(SelectPlaceMenuFragment.SelectPlaceMenuState.Normal, new MarkerTagObject(pointOfInterest.placeId,pointOfInterest.latLng) );
 
         bottomSheetInformation = new BottomSheetInformation();
@@ -767,6 +787,12 @@ public class MainActivity extends BaseActivity {
                     OnMainTabClick();
                 case SearchMode_ShowOnMap:
                     searchFragment.switchToA();
+                case Normal:
+                    if(favoritesFragment.GetVisible() == View.VISIBLE)
+                    {
+                        getBottomBar().selectTabAtPosition(0,true);
+                        OnMainTabClick();
+                    }
 
             }
 
@@ -810,6 +836,10 @@ public class MainActivity extends BaseActivity {
         if(markerTagObject == null)
             return;
 
+        //Favorite
+
+
+
         if (markerTagObject.getPlaceID().compareTo("") == 0) {
             flagShowInfo = true;
 
@@ -819,8 +849,11 @@ public class MainActivity extends BaseActivity {
             bottomBar.setVisibility(View.INVISIBLE);
             directionMenu.HideMenu();
 
+            if(markerTagObject.getTag().compareTo("Favourite") == 0 )
+                selectPlaceMenuFragment.ShowMenu(SelectPlaceMenuFragment.SelectPlaceMenuState.Normal, markerTagObject);
+            else
+                selectPlaceMenuFragment.ShowMenu(SelectPlaceMenuFragment.SelectPlaceMenuState.Remove, markerTagObject);
 
-            selectPlaceMenuFragment.ShowMenu(SelectPlaceMenuFragment.SelectPlaceMenuState.Remove, markerTagObject);
 
 
             try {
@@ -896,7 +929,8 @@ public class MainActivity extends BaseActivity {
             Log.d("MAP:", "Poi Clicked!");
             behavior.setState(BottomSheetBehaviorGoogleMapsLike.STATE_HIDDEN);
 
-            if(markerTagObject.getTag().compareTo("SearchResult") == 0)
+
+            if(markerTagObject.getTag().compareTo("SearchResult") == 0 || markerTagObject.getTag().compareTo("Favourite") == 0 )
                 selectPlaceMenuFragment.ShowMenu(SelectPlaceMenuFragment.SelectPlaceMenuState.Normal, markerTagObject);
             else
                 selectPlaceMenuFragment.ShowMenu(SelectPlaceMenuFragment.SelectPlaceMenuState.Remove, markerTagObject);
@@ -1175,6 +1209,7 @@ public class MainActivity extends BaseActivity {
     public void OnSearchTabClick()
     {
         searchFragment.ShowView();
+        favoritesFragment.HideView();
 
         if(searchFragment.getmCurrentFragmentOnScreen().compareTo("NEARBY_RESULT") == 0)
         {
@@ -1194,14 +1229,171 @@ public class MainActivity extends BaseActivity {
     public void OnMainTabClick()
     {
         searchFragment.HideView();
+        favoritesFragment.HideView();
 
         SetActionBarState(ActionBarState.Normal);
         actionBar.hide();
 
         floatingActionMenu.showMenu(true);
+
+        mapsFragment.UpdateFavoriteList();
     }
 
+    @Override
+    public void OnFavoritesTabClick()
+    {
+        searchFragment.HideView();
+        favoritesFragment.ShowView();
 
+        SetActionBarState(ActionBarState.Normal);
+        actionBar.show();
+
+        floatingActionMenu.hideMenu(false);
+    }
+
+    public void OnFavoritesButtonClick(String tag, final MarkerTagObject markerTagObject) {
+
+
+//        actionBar.hide();
+//        SetActionBarState(ActionBarState.Normal);
+//        bottomBar.setVisibility(View.VISIBLE);
+//        selectPlaceMenuFragment.HideMenu();
+//        behavior.setState(BottomSheetBehaviorGoogleMapsLike.STATE_HIDDEN);
+
+
+
+        switch (tag)
+        {
+            case "PLACE_SELECT":
+
+                if(favoritesDA.ifExists(new FavoritesDTO(markerTagObject.getLatLng(),markerTagObject.getPlaceID())))
+                {
+                    selectPlaceMenuFragment.ShowMenu(SelectPlaceMenuFragment.SelectPlaceMenuState.Normal,markerTagObject);
+
+                }
+                else
+                {
+                    if(markerTagObject.getPlaceID().compareTo("") != 0)
+                    {
+                        final Task<PlacePhotoMetadataResponse> photoMetadataResponse = mGeoDataClient.getPlacePhotos(markerTagObject.getPlaceID());
+
+                        mGeoDataClient.getPlaceById(markerTagObject.getPlaceID()).addOnCompleteListener(new OnCompleteListener<PlaceBufferResponse>() {
+                            @Override
+                            public void onComplete(@NonNull Task<PlaceBufferResponse> task) {
+                                PlaceBufferResponse places = task.getResult();
+
+                                final com.google.android.gms.location.places.Place myPlace = (com.google.android.gms.location.places.Place) places.get(0);
+
+                                photoMetadataResponse.addOnCompleteListener(new OnCompleteListener<PlacePhotoMetadataResponse>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<PlacePhotoMetadataResponse> task) {
+                                        // Get the list of photos.
+                                        PlacePhotoMetadataResponse photos = task.getResult();
+                                        // Get the PlacePhotoMetadataBuffer (metadata for all of the photos).
+                                        PlacePhotoMetadataBuffer photoMetadataBuffer = photos.getPhotoMetadata();
+
+
+                                        if(photoMetadataBuffer.getCount() != 0)
+                                        {
+                                            // Get the first photo in the list.
+                                            PlacePhotoMetadata photoMetadata = photoMetadataBuffer.get(0);
+                                            // Get a full-size bitmap for the photo.
+                                            Task<PlacePhotoResponse> photoResponse = mGeoDataClient.getScaledPhoto(photoMetadata,75,75);
+                                            photoResponse.addOnCompleteListener(new OnCompleteListener<PlacePhotoResponse>() {
+                                                @Override
+                                                public void onComplete(@NonNull Task<PlacePhotoResponse> task) {
+                                                    PlacePhotoResponse photo = task.getResult();
+                                                    //Bitmap bitmap = photo.getBitmap();
+
+                                                    try
+                                                    {
+                                                        favoritesDA.AddFavorites(new FavoritesDTO(markerTagObject.getLatLng(),markerTagObject.getPlaceID(),photo.getBitmap(),myPlace.getName().toString(),myPlace.getAddress().toString()));
+                                                        mapsFragment.UpdateFavoriteList();
+                                                    }
+                                                    catch (Exception e)
+                                                    {
+
+                                                    }
+                                                    bottomInformationSheetController.UpdateFavoriteButton();
+                                                    selectPlaceMenuFragment.ShowMenu(SelectPlaceMenuFragment.SelectPlaceMenuState.Normal,markerTagObject);
+                                                }
+                                            });
+                                        }
+                                        else
+                                        {
+                                            try
+                                            {
+                                            favoritesDA.AddFavorites(new FavoritesDTO(markerTagObject.getLatLng(),markerTagObject.getPlaceID(),(Bitmap) null,myPlace.getName().toString(),myPlace.getAddress().toString()));
+                                                mapsFragment.UpdateFavoriteList();
+                                            }
+                                            catch (Exception e)
+                                            {
+
+                                            }
+                                            bottomInformationSheetController.UpdateFavoriteButton();
+                                            selectPlaceMenuFragment.ShowMenu(SelectPlaceMenuFragment.SelectPlaceMenuState.Normal,markerTagObject);
+                                        }
+
+
+                                    }
+
+                                });
+                            }
+                        });
+                    }
+                    else
+                    {
+                        try {
+                            Geocoder geocoder = new Geocoder(getApplicationContext(), Locale.getDefault());
+                            List<Address> address = geocoder.getFromLocation(markerTagObject.getLatLng().latitude,markerTagObject.getLatLng().longitude, 1);
+
+                            Address obj = address.get(0);
+
+                            //latLng = new LatLng(obj.getLatitude(), obj.getLongitude());
+
+                            final String addressText = String.format("%s, %s", obj.getMaxAddressLineIndex() > 0 ? obj.getAddressLine(0) : "",
+                                    obj.getCountryName());
+
+                            StringBuilder sb = new StringBuilder();
+
+                            for (int i = 0; i < obj.getMaxAddressLineIndex(); i++) {
+                                sb.append(obj.getAddressLine(i));
+                            }
+
+                            favoritesDA.AddFavorites(new FavoritesDTO(markerTagObject.getLatLng(),markerTagObject.getPlaceID(),(Bitmap) null,obj.getFeatureName(),obj.getAddressLine(0).toString()));
+                            mapsFragment.UpdateFavoriteList();
+                            selectPlaceMenuFragment.ShowMenu(SelectPlaceMenuFragment.SelectPlaceMenuState.Normal,markerTagObject);
+                            bottomInformationSheetController.UpdateFavoriteButton();
+
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                }
+
+                break;
+            case "PLACE_SELECT_REMOVE":
+                if(favoritesDA.ifExists(new FavoritesDTO(markerTagObject.getLatLng(),markerTagObject.getPlaceID())))
+                {
+                    favoritesDA.DeleteFavorites(new FavoritesDTO(markerTagObject.getLatLng(),markerTagObject.getPlaceID()));
+                    mapsFragment.UpdateFavoriteList();
+                    selectPlaceMenuFragment.ShowMenu(SelectPlaceMenuFragment.SelectPlaceMenuState.Normal,markerTagObject);
+                    bottomInformationSheetController.UpdateFavoriteButton();
+
+                }
+                else
+                {
+                    selectPlaceMenuFragment.ShowMenu(SelectPlaceMenuFragment.SelectPlaceMenuState.Normal,markerTagObject);
+                    bottomInformationSheetController.UpdateFavoriteButton();
+
+                }
+                break;
+        }
+
+
+
+    }
 
     //ActionBar
     public enum ActionBarState
@@ -1250,6 +1442,13 @@ public class MainActivity extends BaseActivity {
     {
         return searchFragment;
     }
+
+    public SelectPlaceMenuFragment getSelectPlaceMenuFragment()
+    {
+        return this.selectPlaceMenuFragment;
+    }
+
+
 }
 
 

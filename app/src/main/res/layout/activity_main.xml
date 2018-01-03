@@ -321,6 +321,11 @@
         android:name="com.n.travelmap.Activity.SearchActivity.SearchFragment"
         android:id="@+id/search_activity_a"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        />
+        android:layout_height="match_parent" />
+
+    <fragment
+        android:name="com.n.travelmap.Activity.FavoritesActivity.FavoritesFragment"
+        android:id="@+id/favorites_activity"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 </RelativeLayout>
