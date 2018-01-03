@@ -18,7 +18,7 @@
         title="Yêu thích" />
 
     <tab
-        id="@+id/tab_friends1"
+        id="@+id/tab_other"
         icon="@drawable/ic_three_line"
         title="Khác" />
 </tabs>

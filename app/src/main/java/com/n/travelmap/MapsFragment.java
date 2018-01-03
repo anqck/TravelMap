@@ -194,7 +194,8 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
             }
 
             @Override
-            public void onStatusChanged(String provider, int status, Bundle extras) {
+            public void onStatusChanged(String provider, int status, Bundle extras)
+            {
 
             }
 
@@ -214,7 +215,8 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
 
             return view;
         }
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, UPDATE_INTERVAL, 0, locationListenerGPS);
+        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER , UPDATE_INTERVAL, 0, locationListenerGPS);
+
         isLocationEnabled();
 
         return view;

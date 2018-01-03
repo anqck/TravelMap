@@ -62,7 +62,7 @@ public class NearbySearchMenuListViewAdapter extends ArrayAdapter<NearbySearchMe
         private String str;
         private Drawable drawable;
 
-        SimpleImageStringWrapper(String str, Drawable drawable)
+        public SimpleImageStringWrapper(String str, Drawable drawable)
         {
             this.str = str;
             this.drawable = drawable;

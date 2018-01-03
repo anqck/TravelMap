@@ -1,5 +1,6 @@
 package com.n.travelmap;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -21,6 +22,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -52,6 +54,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.n.travelmap.Activity.FavoritesActivity.FavoritesFragment;
+import com.n.travelmap.Activity.OtherMenu.OtherMenuFragment;
 import com.n.travelmap.Activity.SearchActivity.SearchFragment;
 import com.n.travelmap.Database.DatabaseProvider;
 import com.n.travelmap.Database.FavoritesDA;
@@ -120,6 +123,10 @@ public class MainActivity extends BaseActivity {
     //FavoritesFragment
     private FavoritesFragment favoritesFragment;
 
+    //OtherMenuFragment
+    private OtherMenuFragment otherMenuFragment;
+
+
     FavoritesDA favoritesDA;
 
     @Override
@@ -130,12 +137,13 @@ public class MainActivity extends BaseActivity {
         //dynamically include the  current activity      layout into  baseActivity layout.now all the view of baseactivity is   accessible in current activity.
         dynamicContent = (LinearLayout) findViewById(R.id.dynamicContent);
 
-        View wizard = getLayoutInflater().inflate(R.layout.activity_main, null);
+        final View wizard = getLayoutInflater().inflate(R.layout.activity_main, null);
         dynamicContent.addView(wizard);
 
 
         searchFragment = (SearchFragment) getSupportFragmentManager().findFragmentById(R.id.search_activity_a);
         favoritesFragment = (FavoritesFragment)  getSupportFragmentManager().findFragmentById(R.id.favorites_activity);
+        otherMenuFragment = (OtherMenuFragment) getSupportFragmentManager().findFragmentById(R.id.other_menu_activity);
 
         flagShowInfo = false;
         mIsOnDirectionMode = false;
@@ -168,6 +176,7 @@ public class MainActivity extends BaseActivity {
         actionBar_showonmap = findViewById(R.id.show_on_map_layout);
         searchText = findViewById(R.id.search_text);
         searchText.addTextChangedListener(searchFragment.getT());
+
         btnShowOnMap = findViewById(R.id.btn_show_on_map);
         btnShowOnMap.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -802,7 +811,7 @@ public class MainActivity extends BaseActivity {
                     searchFragment.switchToA();
                     break;
                 case Normal:
-                    if(favoritesFragment.GetVisible() == View.VISIBLE)
+                    if(favoritesFragment.GetVisible() == View.VISIBLE || otherMenuFragment.GetVisible() == View.VISIBLE)
                     {
                         getBottomBar().selectTabAtPosition(0,true);
                         OnMainTabClick();
@@ -1106,14 +1115,27 @@ public class MainActivity extends BaseActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == REQ_CODE_CHILD) {
+        if (requestCode == 0) {
 
-//            Bundle bundle = data.getExtras();
-//            if (bundle != null)
-//            {
-//                List<MarkerTagObject> myObject = (List<MarkerTagObject>) bundle.getSerializable("LIST PLACES");
-//                mapsFragment.SetSearchMarker(myObject);
-//            }
+            if(resultCode == Activity.RESULT_OK)
+            {
+                Bundle bundle = data.getExtras();
+                if (bundle != null)
+                {
+                    MarkerTagObject myObject = (MarkerTagObject) bundle.getSerializable("PLACE");
+
+                    List<MarkerTagObject> rs = new ArrayList<>();
+                    rs.add(myObject);
+
+                    getBottomBar().selectTabAtPosition(0,true);
+                    OnMainTabClick();
+
+                    OnSearchResultReturn(rs);
+
+
+                }
+            }
+
 
             //int c = 0;
         }
@@ -1276,6 +1298,7 @@ public class MainActivity extends BaseActivity {
     {
         searchFragment.ShowView();
         favoritesFragment.HideView();
+        otherMenuFragment.HideView();
 
         if(searchFragment.getmCurrentFragmentOnScreen().compareTo("NEARBY_RESULT") == 0)
         {
@@ -1295,6 +1318,7 @@ public class MainActivity extends BaseActivity {
     public void OnMainTabClick()
     {
         searchFragment.HideView();
+        otherMenuFragment.HideView();
         favoritesFragment.HideView();
 
         if(mIsOnDirectionMode)
@@ -1318,6 +1342,7 @@ public class MainActivity extends BaseActivity {
     public void OnFavoritesTabClick()
     {
         searchFragment.HideView();
+        otherMenuFragment.HideView();
         favoritesFragment.ShowView();
 
         SetActionBarState(ActionBarState.Normal);
@@ -1325,6 +1350,20 @@ public class MainActivity extends BaseActivity {
 
         floatingActionMenu.hideMenu(false);
     }
+
+    @Override
+    public void OnOtherTabClick()
+    {
+        searchFragment.HideView();
+        favoritesFragment.HideView();
+        otherMenuFragment.ShowView();
+
+        SetActionBarState(ActionBarState.Normal);
+        actionBar.show();
+
+        floatingActionMenu.hideMenu(false);
+    }
+
 
     public void OnFavoritesButtonClick(String tag, final MarkerTagObject markerTagObject) {
 

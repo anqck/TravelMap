@@ -9,6 +9,7 @@ import android.graphics.Canvas;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.n.travelmap.R;
@@ -34,6 +35,7 @@ public class FavoritesDA {
 
     public void AddFavorites(FavoritesDTO place)
     {
+        long oldSize = CountRecord();
 
         String sql                      =   "INSERT INTO FAVORITES(Lat,Long,PlaceID,Img,PlaceName,Address) VALUES(?,?,?,?,?,?)";
 
@@ -55,6 +57,14 @@ public class FavoritesDA {
 
         insertStmt.executeInsert();
 
+        if(oldSize < CountRecord())
+        {
+            Toast.makeText(context,"Thêm thành công",Toast.LENGTH_SHORT).show();
+        }
+        else
+        {
+            Toast.makeText(context,"Thêm thất bại",Toast.LENGTH_SHORT).show();
+        }
 
 
         //databaseProvider.ExecuseNonQuery("INSERT INTO SEARCHHISTORY(PlaceName,Address, PlaceID,Latitude,Longitude, Types) VALUES ('"+place.getName()+"','"+place.getAddress() +"','"+place.getPlaceID()+ "'," + place.getLocation().latitude+"," + place.getLocation().longitude + ",'" +place.getTypes() +"');");
@@ -144,7 +154,26 @@ public class FavoritesDA {
     }
 
     public void DeleteFavorites(FavoritesDTO model) {
+        long oldSize = CountRecord();
+
         String checkQuery = "DELETE FROM FAVORITES WHERE Lat  ='" +model.getLatLng().latitude+"' AND Long = '"+ model.getLatLng().longitude +"'";
         DatabaseProvider.GetInstance().ExecuseNonQuery(checkQuery);
+
+        if(oldSize > CountRecord())
+        {
+            Toast.makeText(context,"Xóa thành công",Toast.LENGTH_SHORT).show();
+        }
+        else
+        {
+            Toast.makeText(context,"Xóa thất bại",Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public static long CountRecord()
+    {
+        String sql = "SELECT COUNT(*) FROM FAVORITES";
+        SQLiteStatement statement =   DatabaseProvider.GetInstance().GetSQLiteDatabase().compileStatement(sql);
+
+        return statement.simpleQueryForLong();
     }
 }

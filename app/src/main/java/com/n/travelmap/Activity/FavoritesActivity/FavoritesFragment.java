@@ -133,8 +133,15 @@ public class FavoritesFragment extends Fragment {
 
     public void RemoveFavourite(FavoritesDTO favoritesDTO)
     {
+        int oldSize = favoritesDTOList.size();
+
         favoritesDA.DeleteFavorites(favoritesDTO);
         UpdateListFavorites();
+
+
+
+
+
     }
 
     public int GetVisible()

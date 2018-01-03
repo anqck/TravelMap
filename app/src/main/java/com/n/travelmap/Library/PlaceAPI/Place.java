@@ -34,9 +34,11 @@ public class Place {
      * near area of place
      */
     private String vicinity;
-
+    private  String rating;
        public Place() {
     }
+
+
 
 
 
@@ -257,6 +259,15 @@ public class Place {
                 return str;
         }
     }
+
+    public void setRating(String rating) {
+        this.rating = rating;
+    }
+
+    public String getRating() {
+        return rating;
+    }
+
     public static final class Builder {
         private Location location;
         private String icon;
@@ -264,6 +275,7 @@ public class Place {
         private String placeId;
         private String[] types;
         private String vicinity;
+        private String rating;
 
         public Builder() {
         }
@@ -295,6 +307,11 @@ public class Place {
 
         public Builder vicinity(String val) {
             vicinity = val;
+            return this;
+        }
+
+        public Builder rating(String val) {
+            rating = val;
             return this;
         }
 

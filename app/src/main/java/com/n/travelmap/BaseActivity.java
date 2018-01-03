@@ -118,6 +118,9 @@ public class BaseActivity extends AppCompatActivity {
 //                        overridePendingTransition(0, 0);
 
                         return false;
+
+                    case R.id.tab_other:
+                        OnOtherTabClick();
                 }
 
                 return false;
@@ -127,6 +130,9 @@ public class BaseActivity extends AppCompatActivity {
 
         //mainActivity  = new Intent(getBaseContext(),MainActivity.class);
         //mainActivity.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+    }
+
+    protected void OnOtherTabClick() {
     }
 
     protected void OnFavoritesTabClick() {

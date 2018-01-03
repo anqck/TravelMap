@@ -328,4 +328,10 @@
         android:id="@+id/favorites_activity"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
+
+    <fragment
+        android:name="com.n.travelmap.Activity.OtherMenu.OtherMenuFragment"
+        android:id="@+id/other_menu_activity"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 </RelativeLayout>

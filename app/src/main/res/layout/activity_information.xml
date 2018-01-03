@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.n.travelmap.Activity.InformationActivity.InformationActivity"
+    android:background="#f4c764">
+
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:fontFamily="serif"
+        android:gravity="center_horizontal"
+        android:paddingTop="40dp"
+        android:text="TRAVEL MAP"
+        android:textColor="@color/colorAccent"
+        android:textSize="36sp"
+        android:textStyle="bold" />
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:scaleX="0.5"
+        android:scaleY="0.5"
+        app:srcCompat="@mipmap/ic_icon"
+        android:alpha="0.5"/>
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/textView"
+        android:layout_weight="1"
+        android:fontFamily="serif"
+        android:gravity="center_horizontal"
+        android:paddingTop="15dp"
+        android:text="- Nhập môn ứng dụng di động - \n - SE114.I13.PMCL -"
+        android:textColor="@color/colorAccent"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textView2"
+        android:layout_centerHorizontal="true"
+        android:layout_weight="1"
+        android:fontFamily="serif"
+        android:gravity="center_horizontal"
+        android:paddingTop="25dp"
+        android:text=" Giảng viên: ThS. Phan Nguyệt Minh"
+        android:textColor="@color/bb_darkBackgroundColor"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/textView4"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textView3"
+        android:layout_centerHorizontal="true"
+        android:layout_weight="1"
+        android:fontFamily="serif"
+        android:gravity="center_horizontal"
+        android:paddingLeft="30dp"
+        android:paddingTop="15dp"
+        android:text="Nhóm sinh viên thực hiện: \n     1.Quan Chí Khánh An - 15520006\n     2.Dương Chí Bình         - 15520050"
+        android:textAlignment="viewStart"
+        android:textColor="@color/bb_darkBackgroundColor"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+
+    <Button
+        android:id="@+id/imageButton"
+        android:layout_width="130dp"
+        android:layout_height="wrap_content"
+        app:srcCompat="@drawable/ic_favourite"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:text="OK"
+        android:layout_marginBottom="10dp"
+        android:backgroundTint="@color/white"/>
+</RelativeLayout>

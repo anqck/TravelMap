@@ -104,6 +104,8 @@ public class PlacesParser extends Parser {
 
             //get vicinity
             place.setVicinity(jsonPlace.getString(VICINITY));
+
+            place.setRating(jsonPlace.getString("rating"));
         }
         catch (Exception e)
         {

@@ -23,9 +23,16 @@ public class SearchHistoryDTO {
 
     private Bitmap bitmap;
 
-    SearchHistoryDTO()
+    public SearchHistoryDTO()
     {
 
+    }
+
+    public SearchHistoryDTO(String name, String placeid, LatLng location)
+    {
+        this.Name = name;
+        this.PlaceID = placeid;
+        this.Location = location;
     }
 
     public SearchHistoryDTO(SearchPlaceObject obj, LatLng location, Bitmap bitmap)
@@ -48,12 +55,7 @@ public class SearchHistoryDTO {
         this.Location = new LatLng(0,0);
     }
 
-    SearchHistoryDTO(String name, String placeid, LatLng location)
-    {
-        this.Name = name;
-        this.PlaceID = placeid;
-        this.Location = location;
-    }
+
 
 
     SearchHistoryDTO(String name, String placeid, LatLng location, String address, String types, byte[]  bytesImg)
